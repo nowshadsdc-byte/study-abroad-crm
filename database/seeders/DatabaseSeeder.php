@@ -16,7 +16,12 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        $this->call(RolePermissionSeeder::class);
+        $this->call([
+            RoleSeeder::class,
+            UserSeeder::class,
+            UniversitySeeder::class,
+            SettingSeeder::class,
+        ]);
 
         $user = User::query()->updateOrCreate(
             ['email' => 'nowshad.sdc@gmail.com'],

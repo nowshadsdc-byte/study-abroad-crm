@@ -12,10 +12,7 @@ import {
 } from 'lucide-react';
 import { useCallback, useEffect } from 'react';
 import { toast } from 'sonner';
-import {
-    Card,
-    CardContent,
-} from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { dashboard } from '@/routes';
 import dashboardApi from '@/routes/api/dashboard';
 import candidates from '@/routes/candidates';
@@ -48,10 +45,10 @@ type DashboardCard = {
 };
 
 export default function Dashboard() {
-    const { response, submit } = useHttp<Record<string, never>, DashboardResponse>(
-        dashboardApi.metrics(),
-        {},
-    );
+    const { response, submit } = useHttp<
+        Record<string, never>,
+        DashboardResponse
+    >(dashboardApi.metrics(), {});
 
     const loadMetrics = useCallback(async (): Promise<void> => {
         try {
@@ -116,7 +113,9 @@ export default function Dashboard() {
             detail: 'Currently open for applications',
             icon: BookOpen,
             tone: 'bg-sky-500/10 text-sky-600 dark:text-sky-400',
-            href: opportunities.index({ query: { tab: 'programs', status: 'Open' } }).url,
+            href: opportunities.index({
+                query: { tab: 'programs', status: 'Open' },
+            }).url,
         },
         {
             key: 'active_universities',
@@ -124,7 +123,9 @@ export default function Dashboard() {
             detail: 'Active partner universities',
             icon: Building2,
             tone: 'bg-violet-500/10 text-violet-600 dark:text-violet-400',
-            href: opportunities.index({ query: { tab: 'universities', is_active: 1 } }).url,
+            href: opportunities.index({
+                query: { tab: 'universities', is_active: 1 },
+            }).url,
         },
         {
             key: 'total_users',
@@ -149,8 +150,8 @@ export default function Dashboard() {
                             Dashboard overview
                         </h1>
                         <p className="text-sm text-muted-foreground">
-                            A quick snapshot of leads, candidates, programs,
-                            and users. Click any card to jump straight to the
+                            A quick snapshot of leads, candidates, programs, and
+                            users. Click any card to jump straight to the
                             filtered view.
                         </p>
                     </div>

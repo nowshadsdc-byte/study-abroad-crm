@@ -234,7 +234,10 @@ export function AddLeadDialog({ onCreated }: { onCreated?: () => void }) {
                                         aria-invalid={Boolean(errors.address)}
                                         id="address"
                                         onChange={(event) =>
-                                            setData('address', event.target.value)
+                                            setData(
+                                                'address',
+                                                event.target.value,
+                                            )
                                         }
                                         placeholder="Full address"
                                         value={data.address}

@@ -13,6 +13,7 @@ Route::inertia('test', 'welcome')->name('test');
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::inertia('dashboard', 'dashboard')->middleware('permission:dashboard.view')->name('dashboard');
+
     Route::inertia('leads', 'leads/index')->middleware('permission:lead.view')->name('leads.index');
     Route::get('leads/{lead}', fn (Lead $lead) => Inertia::render('leads/show', ['leadId' => $lead->id]))->middleware('permission:lead.view')->name('leads.show');
     Route::inertia('candidates', 'candidates/index')->middleware('permission:candidate.view')->name('candidates.index');

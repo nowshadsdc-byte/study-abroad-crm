@@ -118,7 +118,10 @@ export default function RolesIndex({
 
                 <div className="flex gap-4 overflow-x-auto pb-2">
                     {roleList.map((role) => (
-                        <Card key={role.id} className="w-[min(100%,30rem)] shrink-0">
+                        <Card
+                            key={role.id}
+                            className="w-[min(100%,30rem)] shrink-0"
+                        >
                             <CardHeader>
                                 <div className="flex items-start justify-between gap-3">
                                     <div>

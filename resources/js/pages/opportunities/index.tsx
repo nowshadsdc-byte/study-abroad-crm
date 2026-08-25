@@ -68,7 +68,8 @@ function initialUniversityFilters(): UniversityFilters {
     const isActive =
         typeof window === 'undefined'
             ? ''
-            : (new URLSearchParams(window.location.search).get('is_active') ?? '');
+            : (new URLSearchParams(window.location.search).get('is_active') ??
+              '');
 
     return { search: '', country: '', is_active: isActive };
 }

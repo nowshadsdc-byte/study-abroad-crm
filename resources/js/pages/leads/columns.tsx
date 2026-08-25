@@ -25,7 +25,10 @@ export type LeadRow = {
     assignee: string;
 };
 
-const statusTone: Record<string, 'default' | 'secondary' | 'destructive' | 'outline'> = {
+const statusTone: Record<
+    string,
+    'default' | 'secondary' | 'destructive' | 'outline'
+> = {
     New: 'secondary',
     Qualified: 'default',
     'Follow-up due': 'outline',
@@ -33,7 +36,10 @@ const statusTone: Record<string, 'default' | 'secondary' | 'destructive' | 'outl
     Lost: 'destructive',
 };
 
-const priorityTone: Record<string, 'default' | 'secondary' | 'destructive' | 'outline'> = {
+const priorityTone: Record<
+    string,
+    'default' | 'secondary' | 'destructive' | 'outline'
+> = {
     High: 'destructive',
     Medium: 'secondary',
     Low: 'outline',
@@ -43,16 +49,24 @@ function RowActions({ lead }: { lead: LeadRow }) {
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" aria-label={`Actions for ${lead.name}`}>
+                <Button
+                    variant="ghost"
+                    size="icon"
+                    aria-label={`Actions for ${lead.name}`}
+                >
                     <MoreHorizontal className="size-4" />
                 </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-                <DropdownMenuItem onSelect={() => toast(`Viewing ${lead.name}`)}>
+                <DropdownMenuItem
+                    onSelect={() => toast(`Viewing ${lead.name}`)}
+                >
                     <Eye />
                     View lead
                 </DropdownMenuItem>
-                <DropdownMenuItem onSelect={() => toast(`Editing ${lead.name}`)}>
+                <DropdownMenuItem
+                    onSelect={() => toast(`Editing ${lead.name}`)}
+                >
                     <Pencil />
                     Edit lead
                 </DropdownMenuItem>
@@ -122,9 +136,7 @@ export const leadColumns = columnHelper.columns([
             const value = info.getValue();
 
             return (
-                <Badge variant={statusTone[value] ?? 'outline'}>
-                    {value}
-                </Badge>
+                <Badge variant={statusTone[value] ?? 'outline'}>{value}</Badge>
             );
         },
     }),

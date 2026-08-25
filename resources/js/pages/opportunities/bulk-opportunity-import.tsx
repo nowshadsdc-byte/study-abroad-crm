@@ -73,7 +73,11 @@ function downloadErrorReport(summary: ImportSummary): void {
     URL.revokeObjectURL(url);
 }
 
-export function BulkOpportunityImport({ onImported }: { onImported?: () => void }) {
+export function BulkOpportunityImport({
+    onImported,
+}: {
+    onImported?: () => void;
+}) {
     const [file, setFile] = useState<File | null>(null);
     const { data, response, setData, submit, processing } = useHttp<
         ImportForm,
@@ -247,7 +251,9 @@ export function BulkOpportunityImport({ onImported }: { onImported?: () => void 
                                     <thead className="sticky top-0 border-b bg-muted/60 text-[11px] font-medium tracking-wider text-muted-foreground uppercase">
                                         <tr>
                                             <th className="px-3 py-2">Row</th>
-                                            <th className="px-3 py-2">Program</th>
+                                            <th className="px-3 py-2">
+                                                Program
+                                            </th>
                                             <th className="px-3 py-2">Type</th>
                                             <th className="px-3 py-2">
                                                 Reason
@@ -267,7 +273,8 @@ export function BulkOpportunityImport({ onImported }: { onImported?: () => void 
                                                         {issue.title || '—'}
                                                     </p>
                                                     <p className="text-xs text-muted-foreground">
-                                                        {issue.university || '—'}
+                                                        {issue.university ||
+                                                            '—'}
                                                     </p>
                                                 </td>
                                                 <td className="px-3 py-2 align-top">

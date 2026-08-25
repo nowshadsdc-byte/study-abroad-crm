@@ -49,11 +49,36 @@ class OpportunityController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Opportunity $opportunity): OpportunityDetailResource
+    public function show(Request $request, Opportunity $opportunity): OpportunityDetailResource
     {
         Gate::authorize('view', $opportunity);
 
-        return OpportunityDetailResource::make($opportunity->load(['university', 'applications.candidate']));
+        $search = $request->query('search');
+        $applications = $opportunity->applications()
+            ->with('candidate')
+            ->when($search, function ($query, $search) {
+                $query->where('status', 'like', "%{$search}%")
+                    ->orWhereHas('candidate', function ($q) use ($search) {
+                        $q->where('name', 'like', "%{$search}%");
+                    });
+            })
+            ->latest()
+            ->paginate($request->query('per_page', 20))
+            ->withQueryString();
+
+        $opportunity->setRelation('applications', $applications);
+
+        return OpportunityDetailResource::make($opportunity->load(['university']))
+            ->additional([
+                'applications_meta' => [
+                    'current_page' => $applications->currentPage(),
+                    'from' => $applications->firstItem(),
+                    'last_page' => $applications->lastPage(),
+                    'per_page' => $applications->perPage(),
+                    'to' => $applications->lastItem(),
+                    'total' => $applications->total(),
+                ],
+            ]);
     }
 
     /**

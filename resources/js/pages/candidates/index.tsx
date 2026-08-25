@@ -1,14 +1,10 @@
 import { Head, router, useHttp } from '@inertiajs/react';
-import {
-    Briefcase,
-    Clock,
-    ContactRound,
-    UserX,
-} from 'lucide-react';
+import { Briefcase, Clock, ContactRound, UserX } from 'lucide-react';
 import { useCallback, useEffect } from 'react';
 import { toast } from 'sonner';
 import { CrmListPage } from '@/components/crm-list-page';
 import { DataTable } from '@/components/data-table/data-table';
+import type { PaginationMeta } from '@/components/data-table/data-table';
 import {
     Card,
     CardContent,
@@ -33,25 +29,31 @@ type CandidateApiRow = {
     status: string;
     invoices_count: number;
     created_at: string;
-    assigned_to: { name: string | null, avatar: string | null } | null;
+    assigned_to: { name: string | null; avatar: string | null } | null;
 };
 
 type CandidatesResponse = {
     data: CandidateApiRow[];
     status_counts: Record<string, number>;
+    meta: PaginationMeta;
 };
 
 type CandidateFilters = {
     status: string;
+    page?: number;
+    search?: string;
 };
 
 function initialCandidateFilters(): CandidateFilters {
     if (typeof window === 'undefined') {
-        return { status: '' };
+        return { status: '', page: 1 };
     }
 
+    const searchParams = new URLSearchParams(window.location.search);
+
     return {
-        status: new URLSearchParams(window.location.search).get('status') ?? '',
+        status: searchParams.get('status') ?? '',
+        page: searchParams.has('page') ? Number(searchParams.get('page')) : 1,
     };
 }
 
@@ -86,10 +88,15 @@ function useDebouncedEffect(
 }
 
 export default function CandidatesIndex() {
-    const { data: filters, response, setData: setFilters, submit } = useHttp<
-        CandidateFilters,
-        CandidatesResponse
-    >(candidateApi.index(), initialCandidateFilters());
+    const {
+        data: filters,
+        response,
+        setData: setFilters,
+        submit,
+    } = useHttp<CandidateFilters, CandidatesResponse>(
+        candidateApi.index(),
+        initialCandidateFilters(),
+    );
 
     const loadCandidates = useCallback(async (): Promise<void> => {
         try {
@@ -114,7 +121,17 @@ export default function CandidatesIndex() {
 
     const setStatusFilter = (status: string): void => {
         setFilters((current) => ({
+            ...current,
             status: current.status === status ? '' : status,
+            page: 1,
+        }));
+    };
+
+    const setSearchFilter = (search: string): void => {
+        setFilters((current) => ({
+            ...current,
+            search,
+            page: 1,
         }));
     };
 
@@ -158,20 +175,22 @@ export default function CandidatesIndex() {
             />
 
             <div className="-mt-2 flex flex-wrap gap-2 px-4 sm:px-6">
-                {['Active', 'On Hold', 'Completed', 'Withdrawn'].map((status) => (
-                    <button
-                        className={`rounded-full border px-3 py-1 text-xs font-medium transition-colors ${
-                            filters.status === status
-                                ? 'border-primary bg-primary/10 text-primary'
-                                : 'text-muted-foreground hover:bg-accent'
-                        }`}
-                        key={status}
-                        onClick={() => setStatusFilter(status)}
-                        type="button"
-                    >
-                        {status}
-                    </button>
-                ))}
+                {['Active', 'On Hold', 'Completed', 'Withdrawn'].map(
+                    (status) => (
+                        <button
+                            className={`rounded-full border px-3 py-1 text-xs font-medium transition-colors ${
+                                filters.status === status
+                                    ? 'border-primary bg-primary/10 text-primary'
+                                    : 'text-muted-foreground hover:bg-accent'
+                            }`}
+                            key={status}
+                            onClick={() => setStatusFilter(status)}
+                            type="button"
+                        >
+                            {status}
+                        </button>
+                    ),
+                )}
             </div>
 
             <div className="px-4 pb-6 sm:px-6">
@@ -179,7 +198,8 @@ export default function CandidatesIndex() {
                     <CardHeader>
                         <CardTitle>Candidates directory</CardTitle>
                         <CardDescription>
-                            Search, sort, and manage every student in the pipeline.
+                            Search, sort, and manage every student in the
+                            pipeline.
                         </CardDescription>
                     </CardHeader>
                     <CardContent>
@@ -191,6 +211,12 @@ export default function CandidatesIndex() {
                                 router.visit(`/candidates/${candidate.id}`);
                             }}
                             searchPlaceholder="Search candidates by name, contact, or interest..."
+                            meta={response?.meta}
+                            onPageChange={(page) =>
+                                setFilters((current) => ({ ...current, page }))
+                            }
+                            search={filters.search}
+                            onSearchChange={setSearchFilter}
                         />
                     </CardContent>
                 </Card>

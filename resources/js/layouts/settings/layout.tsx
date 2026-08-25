@@ -4,6 +4,7 @@ import Heading from '@/components/heading';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { useCurrentUrl } from '@/hooks/use-current-url';
+import { usePermission } from '@/hooks/use-permission';
 import { cn, toUrl } from '@/lib/utils';
 import { edit as editAppearance } from '@/routes/appearance';
 import { edit } from '@/routes/profile';
@@ -12,36 +13,45 @@ import { edit as editSecurity } from '@/routes/security';
 import { index as usersIndex } from '@/routes/users';
 import type { NavItem } from '@/types';
 
-const sidebarNavItems: NavItem[] = [
-    {
-        title: 'Profile',
-        href: edit(),
-        icon: null,
-    },
-    {
-        title: 'Security',
-        href: editSecurity(),
-        icon: null,
-    },
-    {
-        title: 'Appearance',
-        href: editAppearance(),
-        icon: null,
-    },
-    {
-        title: 'Roles & Permissions',
-        href: rolesIndex(),
-        icon: null,
-    },
-    {
-        title: 'User Access',
-        href: usersIndex(),
-        icon: null,
-    },
-];
-
 export default function SettingsLayout({ children }: PropsWithChildren) {
     const { isCurrentOrParentUrl } = useCurrentUrl();
+    const { hasRole } = usePermission();
+
+    const sidebarNavItems: NavItem[] = [
+        {
+            title: 'Profile',
+            href: edit(),
+            icon: null,
+        },
+        {
+            title: 'Security',
+            href: editSecurity(),
+            icon: null,
+        },
+        {
+            title: 'Appearance',
+            href: editAppearance(),
+            icon: null,
+        },
+        {
+            title: 'Roles & Permissions',
+            href: rolesIndex(),
+            icon: null,
+        },
+        {
+            title: 'User Access',
+            href: usersIndex(),
+            icon: null,
+        },
+    ];
+
+    if (hasRole('Super Admin') || hasRole('Administrator')) {
+        sidebarNavItems.push({
+            title: 'Company Setup',
+            href: '/settings/company',
+            icon: null,
+        });
+    }
 
     return (
         <div className="px-4 py-6">

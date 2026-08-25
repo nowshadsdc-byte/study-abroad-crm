@@ -76,7 +76,11 @@ function downloadErrorReport(summary: ImportSummary): void {
     URL.revokeObjectURL(url);
 }
 
-export function BulkCandidateImport({ onImported }: { onImported?: () => void }) {
+export function BulkCandidateImport({
+    onImported,
+}: {
+    onImported?: () => void;
+}) {
     const [file, setFile] = useState<File | null>(null);
     const { data, response, setData, submit, processing } = useHttp<
         ImportForm,
@@ -157,7 +161,9 @@ export function BulkCandidateImport({ onImported }: { onImported?: () => void })
             </div>
 
             <div className="grid gap-2">
-                <Label htmlFor="bulk_candidate_file">Upload completed CSV</Label>
+                <Label htmlFor="bulk_candidate_file">
+                    Upload completed CSV
+                </Label>
                 <Input
                     accept=".csv,text/csv"
                     id="bulk_candidate_file"
@@ -250,7 +256,9 @@ export function BulkCandidateImport({ onImported }: { onImported?: () => void })
                                     <thead className="sticky top-0 border-b bg-muted/60 text-[11px] font-medium tracking-wider text-muted-foreground uppercase">
                                         <tr>
                                             <th className="px-3 py-2">Row</th>
-                                            <th className="px-3 py-2">Candidate</th>
+                                            <th className="px-3 py-2">
+                                                Candidate
+                                            </th>
                                             <th className="px-3 py-2">Type</th>
                                             <th className="px-3 py-2">
                                                 Reason

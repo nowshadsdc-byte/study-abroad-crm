@@ -105,12 +105,17 @@ export function createInvoiceColumns({
                         {formatCurrency(props.row.original.total, 'BDT')}
                     </p>
                     <p className="text-xs text-muted-foreground">
-                        Paid {formatCurrency(props.row.original.amountPaid, 'BDT')}
+                        Paid{' '}
+                        {formatCurrency(props.row.original.amountPaid, 'BDT')}
                     </p>
                     {props.row.original.balanceDue > 0 &&
                         props.row.original.status !== 'Cancelled' && (
                             <p className="text-xs font-medium text-amber-600 dark:text-amber-400">
-                                Due {formatCurrency(props.row.original.balanceDue, 'BDT')}
+                                Due{' '}
+                                {formatCurrency(
+                                    props.row.original.balanceDue,
+                                    'BDT',
+                                )}
                             </p>
                         )}
                 </div>
@@ -123,7 +128,10 @@ export function createInvoiceColumns({
                 const value = info.getValue();
 
                 return (
-                    <Badge className={statusTone[value] ?? ''} variant="outline">
+                    <Badge
+                        className={statusTone[value] ?? ''}
+                        variant="outline"
+                    >
                         {value}
                     </Badge>
                 );

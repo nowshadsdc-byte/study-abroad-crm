@@ -39,6 +39,7 @@ class HandleInertiaRequests extends Middleware
 
         return [
             ...parent::share($request),
+            'settings' => \App\Models\Setting::getAllSettings(),
             'name' => config('app.name'),
             'auth' => [
                 'user' => $user ? [

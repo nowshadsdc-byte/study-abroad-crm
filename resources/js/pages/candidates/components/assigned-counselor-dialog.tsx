@@ -12,7 +12,13 @@ import {
     DialogTrigger,
 } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
 import candidateApi from '@/routes/api/candidates';
 
 type AssignedUser = {
@@ -37,10 +43,10 @@ export function AssignedCounselorDialog({
 }) {
     const [open, setOpen] = useState(false);
     const [users, setUsers] = useState<AssignableUser[]>([]);
-    const usersRequest = useHttp<Record<string, never>, { data: AssignableUser[] }>(
-        candidateApi.assignableUsers(),
-        {},
-    );
+    const usersRequest = useHttp<
+        Record<string, never>,
+        { data: AssignableUser[] }
+    >(candidateApi.assignableUsers(), {});
     const assignForm = useHttp<{ assigned_to_id: number | null }>({
         assigned_to_id: assignedTo?.id ?? null,
     });
@@ -65,40 +71,59 @@ export function AssignedCounselorDialog({
             setOpen(false);
             onUpdated?.();
         } catch {
-            toast.error('Unable to update the assigned counselor. Please try again.');
+            toast.error(
+                'Unable to update the assigned counselor. Please try again.',
+            );
         }
     };
 
     if (!canEdit) {
         return (
-            <p className="text-sm font-semibold">{assignedTo?.name ?? 'Unassigned'}</p>
+            <p className="text-sm font-semibold">
+                {assignedTo?.name ?? 'Unassigned'}
+            </p>
         );
     }
 
     return (
         <Dialog open={open} onOpenChange={handleOpenChange}>
             <DialogTrigger asChild>
-                <button className="text-left text-sm font-semibold hover:underline" type="button">
+                <button
+                    className="text-left text-sm font-semibold hover:underline"
+                    type="button"
+                >
                     {assignedTo?.name ?? 'Unassigned'}
                 </button>
             </DialogTrigger>
             <DialogContent>
                 <DialogHeader>
                     <DialogTitle>Assigned Counselor</DialogTitle>
-                    <DialogDescription>Review the current assignment and choose a new counselor.</DialogDescription>
+                    <DialogDescription>
+                        Review the current assignment and choose a new
+                        counselor.
+                    </DialogDescription>
                 </DialogHeader>
 
                 <div className="grid gap-1 rounded-lg border bg-muted/30 p-4 text-sm">
-                    <p className="font-medium">{assignedTo?.name ?? 'Unassigned'}</p>
-                    <p className="text-muted-foreground">{assignedTo?.email || '—'}</p>
-                    <p className="text-muted-foreground">{assignedTo?.phone || '—'}</p>
+                    <p className="font-medium">
+                        {assignedTo?.name ?? 'Unassigned'}
+                    </p>
+                    <p className="text-muted-foreground">
+                        {assignedTo?.email || '—'}
+                    </p>
+                    <p className="text-muted-foreground">
+                        {assignedTo?.phone || '—'}
+                    </p>
                 </div>
 
                 <div className="grid gap-2">
                     <Label htmlFor="assigned_counselor">Assign to</Label>
                     <Select
                         onValueChange={(value) =>
-                            assignForm.setData('assigned_to_id', value === 'unassigned' ? null : Number(value))
+                            assignForm.setData(
+                                'assigned_to_id',
+                                value === 'unassigned' ? null : Number(value),
+                            )
                         }
                         value={
                             assignForm.data.assigned_to_id !== null
@@ -107,23 +132,32 @@ export function AssignedCounselorDialog({
                         }
                     >
                         <SelectTrigger
-                            aria-invalid={Boolean(assignForm.errors.assigned_to_id)}
+                            aria-invalid={Boolean(
+                                assignForm.errors.assigned_to_id,
+                            )}
                             className="w-full"
                             id="assigned_counselor"
                         >
                             <SelectValue placeholder="Select a person" />
                         </SelectTrigger>
                         <SelectContent>
-                            <SelectItem value="unassigned">Unassigned</SelectItem>
+                            <SelectItem value="unassigned">
+                                Unassigned
+                            </SelectItem>
                             {users.map((user) => (
-                                <SelectItem key={user.id} value={String(user.id)}>
+                                <SelectItem
+                                    key={user.id}
+                                    value={String(user.id)}
+                                >
                                     {user.name}
                                 </SelectItem>
                             ))}
                         </SelectContent>
                     </Select>
                     {assignForm.errors.assigned_to_id && (
-                        <p className="text-xs text-destructive">{assignForm.errors.assigned_to_id}</p>
+                        <p className="text-xs text-destructive">
+                            {assignForm.errors.assigned_to_id}
+                        </p>
                     )}
                 </div>
 
@@ -136,7 +170,11 @@ export function AssignedCounselorDialog({
                     >
                         Cancel
                     </Button>
-                    <Button disabled={assignForm.processing} onClick={handleUpdate} type="button">
+                    <Button
+                        disabled={assignForm.processing}
+                        onClick={handleUpdate}
+                        type="button"
+                    >
                         {assignForm.processing ? 'Updating...' : 'Update'}
                     </Button>
                 </DialogFooter>

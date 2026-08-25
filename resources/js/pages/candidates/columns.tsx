@@ -27,7 +27,10 @@ export type CandidateRow = {
     createdAt: string;
 };
 
-const statusTone: Record<string, 'default' | 'secondary' | 'destructive' | 'outline'> = {
+const statusTone: Record<
+    string,
+    'default' | 'secondary' | 'destructive' | 'outline'
+> = {
     Active: 'default',
     'On Hold': 'secondary',
     Completed: 'default',
@@ -47,16 +50,24 @@ function RowActions({ candidate }: { candidate: CandidateRow }) {
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" aria-label={`Actions for ${candidate.name}`}>
+                <Button
+                    variant="ghost"
+                    size="icon"
+                    aria-label={`Actions for ${candidate.name}`}
+                >
                     <MoreHorizontal className="size-4" />
                 </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-                <DropdownMenuItem onSelect={() => toast(`Viewing ${candidate.name}`)}>
+                <DropdownMenuItem
+                    onSelect={() => toast(`Viewing ${candidate.name}`)}
+                >
                     <Eye />
                     View candidate
                 </DropdownMenuItem>
-                <DropdownMenuItem onSelect={() => toast(`Editing ${candidate.name}`)}>
+                <DropdownMenuItem
+                    onSelect={() => toast(`Editing ${candidate.name}`)}
+                >
                     <Pencil />
                     Edit candidate
                 </DropdownMenuItem>
@@ -83,7 +94,11 @@ export const candidateColumns = columnHelper.columns([
             <div className="flex items-center gap-3">
                 <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary/10 text-xs font-medium text-primary">
                     {info.row.original.avatar ? (
-                        <img src={info.row.original.avatar} alt={info.getValue()} className="h-full w-full rounded-full object-cover" />
+                        <img
+                            src={info.row.original.avatar}
+                            alt={info.getValue()}
+                            className="h-full w-full rounded-full object-cover"
+                        />
                     ) : (
                         info.getValue().substring(0, 2).toUpperCase()
                     )}
@@ -126,9 +141,7 @@ export const candidateColumns = columnHelper.columns([
         cell: (info) => {
             const value = info.getValue();
             return (
-                <Badge variant={stepTone[value] ?? 'outline'}>
-                    {value}
-                </Badge>
+                <Badge variant={stepTone[value] ?? 'outline'}>{value}</Badge>
             );
         },
     }),
@@ -138,9 +151,7 @@ export const candidateColumns = columnHelper.columns([
         cell: (info) => {
             const value = info.getValue();
             return (
-                <Badge variant={statusTone[value] ?? 'outline'}>
-                    {value}
-                </Badge>
+                <Badge variant={statusTone[value] ?? 'outline'}>{value}</Badge>
             );
         },
     }),
@@ -157,8 +168,12 @@ export const candidateColumns = columnHelper.columns([
         sortFn: 'datetime',
         cell: (info) => {
             const date = new Date(info.getValue());
-            return <span className="text-muted-foreground">{formatDistanceToNow(date, { addSuffix: true })}</span>;
-        }
+            return (
+                <span className="text-muted-foreground">
+                    {formatDistanceToNow(date, { addSuffix: true })}
+                </span>
+            );
+        },
     }),
     columnHelper.display({
         id: 'actions',

@@ -22,6 +22,9 @@ Route::middleware(['auth'])->group(function () {
     Route::post('settings/roles', [RoleController::class, 'store'])->middleware('permission:settings.access')->name('roles.store');
     Route::put('settings/roles/{role}', [RoleController::class, 'update'])->middleware('permission:settings.access')->name('roles.update');
     Route::delete('settings/roles/{role}', [RoleController::class, 'destroy'])->middleware('permission:settings.access')->name('roles.destroy');
+
+    Route::get('settings/company', [\App\Http\Controllers\Settings\CompanyController::class, 'edit'])->middleware('role:Super Admin|Administrator')->name('company.edit');
+    Route::post('settings/company', [\App\Http\Controllers\Settings\CompanyController::class, 'update'])->middleware('role:Super Admin|Administrator')->name('company.update');
 });
 
 Route::middleware(['auth', 'verified'])->group(function () {

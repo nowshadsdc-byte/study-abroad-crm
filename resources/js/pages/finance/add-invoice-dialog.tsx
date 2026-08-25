@@ -46,7 +46,11 @@ export type InvoiceForm = {
     items: InvoiceItemForm[];
 };
 
-const emptyItem: InvoiceItemForm = { description: '', quantity: '1', unit_price: '0' };
+const emptyItem: InvoiceItemForm = {
+    description: '',
+    quantity: '1',
+    unit_price: '0',
+};
 
 export function initialInvoiceForm(): InvoiceForm {
     return {
@@ -145,14 +149,19 @@ export function InvoiceFormFields({
         );
     };
 
-    const addItem = (): void => setData('items', [...data.items, { ...emptyItem }]);
+    const addItem = (): void =>
+        setData('items', [...data.items, { ...emptyItem }]);
     const removeItem = (index: number): void =>
         setData(
             'items',
             data.items.filter((_, i) => i !== index),
         );
 
-    const totals = computeTotals(data.items, data.discount_amount, data.tax_rate);
+    const totals = computeTotals(
+        data.items,
+        data.discount_amount,
+        data.tax_rate,
+    );
 
     return (
         <div className="grid gap-5">
@@ -160,7 +169,8 @@ export function InvoiceFormFields({
                 <Label>Bill to</Label>
                 <TabGroup
                     onChange={(value) => {
-                        const next = value === 'candidate' ? 'candidate' : 'client';
+                        const next =
+                            value === 'candidate' ? 'candidate' : 'client';
                         setBillTo(next);
 
                         if (next === 'client') {
@@ -185,7 +195,11 @@ export function InvoiceFormFields({
                         onValueChange={(value) =>
                             setData('candidate_id', Number(value))
                         }
-                        value={data.candidate_id ? String(data.candidate_id) : undefined}
+                        value={
+                            data.candidate_id
+                                ? String(data.candidate_id)
+                                : undefined
+                        }
                     >
                         <SelectTrigger
                             aria-invalid={Boolean(

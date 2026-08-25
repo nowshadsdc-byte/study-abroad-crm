@@ -120,7 +120,10 @@ export function AddCandidateDialog({
     const open = openProp ?? internalOpen;
 
     const { clearErrors, data, errors, processing, reset, setData, submit } =
-        useHttp<CandidateForm>(candidateApi.store(), { ...initialForm, ...initialData });
+        useHttp<CandidateForm>(candidateApi.store(), {
+            ...initialForm,
+            ...initialData,
+        });
 
     const handleOpenChange = (isOpen: boolean): void => {
         setInternalOpen(isOpen);
@@ -215,202 +218,361 @@ export function AddCandidateDialog({
                         </DialogFooter>
                     </>
                 ) : (
-                <form className="grid gap-4" onSubmit={handleSubmit}>
-                    {errors.lead_id && (
-                        <p className="text-sm text-destructive">{errors.lead_id}</p>
-                    )}
-                    <div className="grid gap-4 sm:grid-cols-2">
-                        <Field error={errors.name} label="Full name *" name="name">
-                            <Input
-                                aria-invalid={Boolean(errors.name)}
-                                id="name"
-                                onChange={(event) => setData('name', event.target.value)}
-                                placeholder="e.g. Arif Hossain"
-                                value={data.name}
-                            />
-                        </Field>
-                        <Field error={errors.email} label="Email" name="email">
-                            <Input
-                                aria-invalid={Boolean(errors.email)}
-                                id="email"
-                                onChange={(event) => setData('email', event.target.value)}
-                                placeholder="student@example.com"
-                                type="email"
-                                value={data.email}
-                            />
-                        </Field>
-                        <Field error={errors.phone} label="Phone" name="phone">
-                            <Input
-                                aria-invalid={Boolean(errors.phone)}
-                                id="phone"
-                                onChange={(event) => setData('phone', event.target.value)}
-                                placeholder="+880 1..."
-                                value={data.phone}
-                            />
-                        </Field>
-                        <Field error={errors.date_of_birth} label="Date of Birth" name="date_of_birth">
-                            <Input
-                                aria-invalid={Boolean(errors.date_of_birth)}
-                                id="date_of_birth"
-                                onChange={(event) => setData('date_of_birth', event.target.value)}
-                                type="date"
-                                value={data.date_of_birth}
-                            />
-                        </Field>
-                        <Field error={errors.gender} label="Gender" name="gender">
-                            <Select value={data.gender} onValueChange={(value) => setData('gender', value)}>
-                                <SelectTrigger aria-invalid={Boolean(errors.gender)} id="gender" className="w-full">
-                                    <SelectValue placeholder="Select gender" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="Male">Male</SelectItem>
-                                    <SelectItem value="Female">Female</SelectItem>
-                                    <SelectItem value="Other">Other</SelectItem>
-                                </SelectContent>
-                            </Select>
-                        </Field>
-                        
-                        <Field error={errors.education_level} label="Education Level" name="education_level">
-                            <Select value={data.education_level} onValueChange={(value) => setData('education_level', value)}>
-                                <SelectTrigger aria-invalid={Boolean(errors.education_level)} id="education_level" className="w-full">
-                                    <SelectValue placeholder="Select education level" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    {educationLevels.map((level) => (
-                                        <SelectItem key={level} value={level}>
-                                            {level}
-                                        </SelectItem>
-                                    ))}
-                                </SelectContent>
-                            </Select>
-                        </Field>
-                        <Field error={errors.institution} label="Institution" name="institution">
-                            <Input
-                                aria-invalid={Boolean(errors.institution)}
-                                id="institution"
-                                onChange={(event) => setData('institution', event.target.value)}
-                                placeholder="e.g. Dhaka University"
-                                value={data.institution}
-                            />
-                        </Field>
-                        <Field error={errors.gpa} label="GPA" name="gpa">
-                            <Input
-                                aria-invalid={Boolean(errors.gpa)}
-                                id="gpa"
-                                onChange={(event) => setData('gpa', event.target.value)}
-                                placeholder="e.g. 3.75"
-                                type="number"
-                                step="0.01"
-                                value={data.gpa}
-                            />
-                        </Field>
-                        <Field error={errors.passing_year} label="Passing Year" name="passing_year">
-                            <Input
-                                aria-invalid={Boolean(errors.passing_year)}
-                                id="passing_year"
-                                onChange={(event) => setData('passing_year', event.target.value)}
-                                placeholder="e.g. 2024"
-                                type="number"
-                                value={data.passing_year}
-                            />
-                        </Field>
-                        <Field error={errors.ielts_score} label="IELTS Score" name="ielts_score">
-                            <Input
-                                aria-invalid={Boolean(errors.ielts_score)}
-                                id="ielts_score"
-                                onChange={(event) => setData('ielts_score', event.target.value)}
-                                placeholder="e.g. 7.0"
-                                type="number"
-                                step="0.5"
-                                value={data.ielts_score}
-                            />
-                        </Field>
-                        
-                        <Field error={errors.desired_country} label="Interested country" name="desired_country">
-                            <Input
-                                aria-invalid={Boolean(errors.desired_country)}
-                                id="desired_country"
-                                onChange={(event) => setData('desired_country', event.target.value)}
-                                placeholder="e.g. United Kingdom"
-                                value={data.desired_country}
-                            />
-                        </Field>
-                        <Field error={errors.desired_course} label="Interested course" name="desired_course">
-                            <Input
-                                aria-invalid={Boolean(errors.desired_course)}
-                                id="desired_course"
-                                onChange={(event) => setData('desired_course', event.target.value)}
-                                placeholder="e.g. MSc Data Analytics"
-                                value={data.desired_course}
-                            />
-                        </Field>
-                        <Field error={errors.desired_intake} label="Preferred intake" name="desired_intake">
-                            <Input
-                                aria-invalid={Boolean(errors.desired_intake)}
-                                id="desired_intake"
-                                onChange={(event) => setData('desired_intake', event.target.value)}
-                                placeholder="e.g. Fall 2026"
-                                value={data.desired_intake}
-                            />
-                        </Field>
-                        <Field error={errors.status} label="Status *" name="status">
-                            <Select value={data.status} onValueChange={(value) => setData('status', value)}>
-                                <SelectTrigger aria-invalid={Boolean(errors.status)} id="status" className="w-full">
-                                    <SelectValue />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    {statuses.map((status) => (
-                                        <SelectItem key={status} value={status}>
-                                            {status}
-                                        </SelectItem>
-                                    ))}
-                                </SelectContent>
-                            </Select>
-                        </Field>
-                        
-                        <div className="sm:col-span-2">
-                            <Field error={errors.address} label="Address" name="address">
+                    <form className="grid gap-4" onSubmit={handleSubmit}>
+                        {errors.lead_id && (
+                            <p className="text-sm text-destructive">
+                                {errors.lead_id}
+                            </p>
+                        )}
+                        <div className="grid gap-4 sm:grid-cols-2">
+                            <Field
+                                error={errors.name}
+                                label="Full name *"
+                                name="name"
+                            >
                                 <Input
-                                    aria-invalid={Boolean(errors.address)}
-                                    id="address"
-                                    onChange={(event) => setData('address', event.target.value)}
-                                    placeholder="Full address"
-                                    value={data.address}
+                                    aria-invalid={Boolean(errors.name)}
+                                    id="name"
+                                    onChange={(event) =>
+                                        setData('name', event.target.value)
+                                    }
+                                    placeholder="e.g. Arif Hossain"
+                                    value={data.name}
                                 />
                             </Field>
-                        </div>
-                        
-                        <div className="sm:col-span-2">
-                            <Field error={errors.notes} label="Notes" name="notes">
-                                <textarea
-                                    aria-invalid={Boolean(errors.notes)}
-                                    className="min-h-24 w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-xs outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40"
-                                    id="notes"
-                                    onChange={(event) => setData('notes', event.target.value)}
-                                    placeholder="Additional notes about this candidate..."
-                                    value={data.notes}
+                            <Field
+                                error={errors.email}
+                                label="Email"
+                                name="email"
+                            >
+                                <Input
+                                    aria-invalid={Boolean(errors.email)}
+                                    id="email"
+                                    onChange={(event) =>
+                                        setData('email', event.target.value)
+                                    }
+                                    placeholder="student@example.com"
+                                    type="email"
+                                    value={data.email}
                                 />
                             </Field>
+                            <Field
+                                error={errors.phone}
+                                label="Phone"
+                                name="phone"
+                            >
+                                <Input
+                                    aria-invalid={Boolean(errors.phone)}
+                                    id="phone"
+                                    onChange={(event) =>
+                                        setData('phone', event.target.value)
+                                    }
+                                    placeholder="+880 1..."
+                                    value={data.phone}
+                                />
+                            </Field>
+                            <Field
+                                error={errors.date_of_birth}
+                                label="Date of Birth"
+                                name="date_of_birth"
+                            >
+                                <Input
+                                    aria-invalid={Boolean(errors.date_of_birth)}
+                                    id="date_of_birth"
+                                    onChange={(event) =>
+                                        setData(
+                                            'date_of_birth',
+                                            event.target.value,
+                                        )
+                                    }
+                                    type="date"
+                                    value={data.date_of_birth}
+                                />
+                            </Field>
+                            <Field
+                                error={errors.gender}
+                                label="Gender"
+                                name="gender"
+                            >
+                                <Select
+                                    value={data.gender}
+                                    onValueChange={(value) =>
+                                        setData('gender', value)
+                                    }
+                                >
+                                    <SelectTrigger
+                                        aria-invalid={Boolean(errors.gender)}
+                                        id="gender"
+                                        className="w-full"
+                                    >
+                                        <SelectValue placeholder="Select gender" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="Male">
+                                            Male
+                                        </SelectItem>
+                                        <SelectItem value="Female">
+                                            Female
+                                        </SelectItem>
+                                        <SelectItem value="Other">
+                                            Other
+                                        </SelectItem>
+                                    </SelectContent>
+                                </Select>
+                            </Field>
+
+                            <Field
+                                error={errors.education_level}
+                                label="Education Level"
+                                name="education_level"
+                            >
+                                <Select
+                                    value={data.education_level}
+                                    onValueChange={(value) =>
+                                        setData('education_level', value)
+                                    }
+                                >
+                                    <SelectTrigger
+                                        aria-invalid={Boolean(
+                                            errors.education_level,
+                                        )}
+                                        id="education_level"
+                                        className="w-full"
+                                    >
+                                        <SelectValue placeholder="Select education level" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {educationLevels.map((level) => (
+                                            <SelectItem
+                                                key={level}
+                                                value={level}
+                                            >
+                                                {level}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                            </Field>
+                            <Field
+                                error={errors.institution}
+                                label="Institution"
+                                name="institution"
+                            >
+                                <Input
+                                    aria-invalid={Boolean(errors.institution)}
+                                    id="institution"
+                                    onChange={(event) =>
+                                        setData(
+                                            'institution',
+                                            event.target.value,
+                                        )
+                                    }
+                                    placeholder="e.g. Dhaka University"
+                                    value={data.institution}
+                                />
+                            </Field>
+                            <Field error={errors.gpa} label="GPA" name="gpa">
+                                <Input
+                                    aria-invalid={Boolean(errors.gpa)}
+                                    id="gpa"
+                                    onChange={(event) =>
+                                        setData('gpa', event.target.value)
+                                    }
+                                    placeholder="e.g. 3.75"
+                                    type="number"
+                                    step="0.01"
+                                    value={data.gpa}
+                                />
+                            </Field>
+                            <Field
+                                error={errors.passing_year}
+                                label="Passing Year"
+                                name="passing_year"
+                            >
+                                <Input
+                                    aria-invalid={Boolean(errors.passing_year)}
+                                    id="passing_year"
+                                    onChange={(event) =>
+                                        setData(
+                                            'passing_year',
+                                            event.target.value,
+                                        )
+                                    }
+                                    placeholder="e.g. 2024"
+                                    type="number"
+                                    value={data.passing_year}
+                                />
+                            </Field>
+                            <Field
+                                error={errors.ielts_score}
+                                label="IELTS Score"
+                                name="ielts_score"
+                            >
+                                <Input
+                                    aria-invalid={Boolean(errors.ielts_score)}
+                                    id="ielts_score"
+                                    onChange={(event) =>
+                                        setData(
+                                            'ielts_score',
+                                            event.target.value,
+                                        )
+                                    }
+                                    placeholder="e.g. 7.0"
+                                    type="number"
+                                    step="0.5"
+                                    value={data.ielts_score}
+                                />
+                            </Field>
+
+                            <Field
+                                error={errors.desired_country}
+                                label="Interested country"
+                                name="desired_country"
+                            >
+                                <Input
+                                    aria-invalid={Boolean(
+                                        errors.desired_country,
+                                    )}
+                                    id="desired_country"
+                                    onChange={(event) =>
+                                        setData(
+                                            'desired_country',
+                                            event.target.value,
+                                        )
+                                    }
+                                    placeholder="e.g. United Kingdom"
+                                    value={data.desired_country}
+                                />
+                            </Field>
+                            <Field
+                                error={errors.desired_course}
+                                label="Interested course"
+                                name="desired_course"
+                            >
+                                <Input
+                                    aria-invalid={Boolean(
+                                        errors.desired_course,
+                                    )}
+                                    id="desired_course"
+                                    onChange={(event) =>
+                                        setData(
+                                            'desired_course',
+                                            event.target.value,
+                                        )
+                                    }
+                                    placeholder="e.g. MSc Data Analytics"
+                                    value={data.desired_course}
+                                />
+                            </Field>
+                            <Field
+                                error={errors.desired_intake}
+                                label="Preferred intake"
+                                name="desired_intake"
+                            >
+                                <Input
+                                    aria-invalid={Boolean(
+                                        errors.desired_intake,
+                                    )}
+                                    id="desired_intake"
+                                    onChange={(event) =>
+                                        setData(
+                                            'desired_intake',
+                                            event.target.value,
+                                        )
+                                    }
+                                    placeholder="e.g. Fall 2026"
+                                    value={data.desired_intake}
+                                />
+                            </Field>
+                            <Field
+                                error={errors.status}
+                                label="Status *"
+                                name="status"
+                            >
+                                <Select
+                                    value={data.status}
+                                    onValueChange={(value) =>
+                                        setData('status', value)
+                                    }
+                                >
+                                    <SelectTrigger
+                                        aria-invalid={Boolean(errors.status)}
+                                        id="status"
+                                        className="w-full"
+                                    >
+                                        <SelectValue />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {statuses.map((status) => (
+                                            <SelectItem
+                                                key={status}
+                                                value={status}
+                                            >
+                                                {status}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                            </Field>
+
+                            <div className="sm:col-span-2">
+                                <Field
+                                    error={errors.address}
+                                    label="Address"
+                                    name="address"
+                                >
+                                    <Input
+                                        aria-invalid={Boolean(errors.address)}
+                                        id="address"
+                                        onChange={(event) =>
+                                            setData(
+                                                'address',
+                                                event.target.value,
+                                            )
+                                        }
+                                        placeholder="Full address"
+                                        value={data.address}
+                                    />
+                                </Field>
+                            </div>
+
+                            <div className="sm:col-span-2">
+                                <Field
+                                    error={errors.notes}
+                                    label="Notes"
+                                    name="notes"
+                                >
+                                    <textarea
+                                        aria-invalid={Boolean(errors.notes)}
+                                        className="min-h-24 w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-xs outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40"
+                                        id="notes"
+                                        onChange={(event) =>
+                                            setData('notes', event.target.value)
+                                        }
+                                        placeholder="Additional notes about this candidate..."
+                                        value={data.notes}
+                                    />
+                                </Field>
+                            </div>
                         </div>
-                    </div>
-                    <DialogFooter>
-                        <Button
-                            disabled={processing}
-                            onClick={() => handleOpenChange(false)}
-                            type="button"
-                            variant="outline"
-                        >
-                            Cancel
-                        </Button>
-                        <Button
-                            className="bg-linear-to-br from-primary to-teal-600 hover:opacity-90"
-                            disabled={processing}
-                            type="submit"
-                        >
-                            {processing ? 'Saving...' : 'Save candidate'}
-                        </Button>
-                    </DialogFooter>
-                </form>
+                        <DialogFooter>
+                            <Button
+                                disabled={processing}
+                                onClick={() => handleOpenChange(false)}
+                                type="button"
+                                variant="outline"
+                            >
+                                Cancel
+                            </Button>
+                            <Button
+                                className="bg-linear-to-br from-primary to-teal-600 hover:opacity-90"
+                                disabled={processing}
+                                type="submit"
+                            >
+                                {processing ? 'Saving...' : 'Save candidate'}
+                            </Button>
+                        </DialogFooter>
+                    </form>
                 )}
             </DialogContent>
         </Dialog>

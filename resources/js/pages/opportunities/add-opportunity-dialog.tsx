@@ -438,31 +438,31 @@ export function AddOpportunityDialog({
                         </DialogFooter>
                     </>
                 ) : (
-                <form className="grid gap-4" onSubmit={handleSubmit}>
-                    <OpportunityFormFields
-                        data={data}
-                        errors={errors}
-                        setData={setData}
-                        universities={universities}
-                    />
-                    <DialogFooter>
-                        <Button
-                            disabled={processing}
-                            onClick={() => handleOpenChange(false)}
-                            type="button"
-                            variant="outline"
-                        >
-                            Cancel
-                        </Button>
-                        <Button
-                            className="bg-linear-to-br from-primary to-teal-600 hover:opacity-90"
-                            disabled={processing}
-                            type="submit"
-                        >
-                            {processing ? 'Saving...' : 'Save program'}
-                        </Button>
-                    </DialogFooter>
-                </form>
+                    <form className="grid gap-4" onSubmit={handleSubmit}>
+                        <OpportunityFormFields
+                            data={data}
+                            errors={errors}
+                            setData={setData}
+                            universities={universities}
+                        />
+                        <DialogFooter>
+                            <Button
+                                disabled={processing}
+                                onClick={() => handleOpenChange(false)}
+                                type="button"
+                                variant="outline"
+                            >
+                                Cancel
+                            </Button>
+                            <Button
+                                className="bg-linear-to-br from-primary to-teal-600 hover:opacity-90"
+                                disabled={processing}
+                                type="submit"
+                            >
+                                {processing ? 'Saving...' : 'Save program'}
+                            </Button>
+                        </DialogFooter>
+                    </form>
                 )}
             </DialogContent>
         </Dialog>

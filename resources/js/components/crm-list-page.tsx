@@ -25,13 +25,15 @@ export function CrmListPage({
         <div className="flex flex-1 flex-col gap-6 p-4 sm:p-6">
             <header className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                 <div className="flex flex-col gap-1">
-                <p className="text-xs font-medium tracking-wider text-primary uppercase">
-                    Confidence Global Bd CRM
-                </p>
-                <h1 className="text-xl font-semibold tracking-tight sm:text-2xl">
-                    {title}
-                </h1>
-                <p className="text-sm text-muted-foreground">{description}</p>
+                    <p className="text-xs font-medium tracking-wider text-primary uppercase">
+                        Confidence Global Bd CRM
+                    </p>
+                    <h1 className="text-xl font-semibold tracking-tight sm:text-2xl">
+                        {title}
+                    </h1>
+                    <p className="text-sm text-muted-foreground">
+                        {description}
+                    </p>
                 </div>
                 {headerAction}
             </header>

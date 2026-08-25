@@ -30,16 +30,29 @@
             }
         </style>
 
-        <link rel="icon" href="/favicon.ico" sizes="any">
+        @if(\App\Models\Setting::get('site_favicon'))
+            <link rel="icon" href="{{ Storage::url(\App\Models\Setting::get('site_favicon')) }}">
+        @else
+            <link rel="icon" href="/favicon.ico" sizes="any">
+        @endif
+        
         <link rel="icon" href="/favicon.svg" type="image/svg+xml">
-        <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+        
+        @if(\App\Models\Setting::get('site_icon'))
+            <link rel="apple-touch-icon" href="{{ Storage::url(\App\Models\Setting::get('site_icon')) }}">
+        @else
+            <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+        @endif
+
+        <meta name="description" content="{{ \App\Models\Setting::get('meta_description', '') }}">
+        <meta name="keywords" content="{{ \App\Models\Setting::get('meta_keywords', '') }}">
 
         @fonts
 
         @viteReactRefresh
         @vite(['resources/css/app.css', 'resources/js/app.tsx', "resources/js/pages/{$page['component']}.tsx"])
         <x-inertia::head>
-            <title>{{ config('app.name', 'Laravel') }}</title>
+            <title>{{ \App\Models\Setting::get('site_title', config('app.name', 'Laravel')) }}</title>
         </x-inertia::head>
     </head>
     <body class="font-sans antialiased">

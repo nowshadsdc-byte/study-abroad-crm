@@ -22,7 +22,13 @@ import {
 import { formatCurrency } from '@/lib/constants';
 import invoiceApi from '@/routes/api/invoices';
 
-const paymentMethods = ['Cash', 'Bank Transfer', 'Card', 'Mobile Banking', 'Other'];
+const paymentMethods = [
+    'Cash',
+    'Bank Transfer',
+    'Card',
+    'Mobile Banking',
+    'Other',
+];
 
 type PaymentForm = {
     amount: string;

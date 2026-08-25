@@ -309,30 +309,30 @@ export function AddUniversityDialog({ onCreated }: { onCreated?: () => void }) {
                         </DialogFooter>
                     </>
                 ) : (
-                <form className="grid gap-4" onSubmit={handleSubmit}>
-                    <UniversityFormFields
-                        data={data}
-                        errors={errors}
-                        setData={setData}
-                    />
-                    <DialogFooter>
-                        <Button
-                            disabled={processing}
-                            onClick={() => handleOpenChange(false)}
-                            type="button"
-                            variant="outline"
-                        >
-                            Cancel
-                        </Button>
-                        <Button
-                            className="bg-linear-to-br from-primary to-teal-600 hover:opacity-90"
-                            disabled={processing}
-                            type="submit"
-                        >
-                            {processing ? 'Saving...' : 'Save university'}
-                        </Button>
-                    </DialogFooter>
-                </form>
+                    <form className="grid gap-4" onSubmit={handleSubmit}>
+                        <UniversityFormFields
+                            data={data}
+                            errors={errors}
+                            setData={setData}
+                        />
+                        <DialogFooter>
+                            <Button
+                                disabled={processing}
+                                onClick={() => handleOpenChange(false)}
+                                type="button"
+                                variant="outline"
+                            >
+                                Cancel
+                            </Button>
+                            <Button
+                                className="bg-linear-to-br from-primary to-teal-600 hover:opacity-90"
+                                disabled={processing}
+                                type="submit"
+                            >
+                                {processing ? 'Saving...' : 'Save university'}
+                            </Button>
+                        </DialogFooter>
+                    </form>
                 )}
             </DialogContent>
         </Dialog>

@@ -119,10 +119,10 @@ export function EditLeadDialog({
     const [open, setOpen] = useState(false);
     const { clearErrors, data, errors, processing, setData, submit } =
         useHttp<LeadForm>(leadApi.update(lead.id), buildForm(lead));
-    const usersRequest = useHttp<Record<string, never>, { data: AssignableUser[] }>(
-        leadApi.assignableUsers(),
-        {},
-    );
+    const usersRequest = useHttp<
+        Record<string, never>,
+        { data: AssignableUser[] }
+    >(leadApi.assignableUsers(), {});
 
     const handleOpenChange = (isOpen: boolean): void => {
         setOpen(isOpen);
@@ -188,45 +188,75 @@ export function EditLeadDialog({
 
                 <form className="grid gap-4" onSubmit={handleSubmit}>
                     <div className="grid gap-4 sm:grid-cols-2">
-                        <Field error={errors.name} label="Full name *" name="edit_name">
+                        <Field
+                            error={errors.name}
+                            label="Full name *"
+                            name="edit_name"
+                        >
                             <Input
                                 aria-invalid={Boolean(errors.name)}
                                 id="edit_name"
-                                onChange={(event) => setData('name', event.target.value)}
+                                onChange={(event) =>
+                                    setData('name', event.target.value)
+                                }
                                 value={data.name}
                             />
                         </Field>
-                        <Field error={errors.phone} label="Phone" name="edit_phone">
+                        <Field
+                            error={errors.phone}
+                            label="Phone"
+                            name="edit_phone"
+                        >
                             <Input
                                 aria-invalid={Boolean(errors.phone)}
                                 id="edit_phone"
-                                onChange={(event) => setData('phone', event.target.value)}
+                                onChange={(event) =>
+                                    setData('phone', event.target.value)
+                                }
                                 value={data.phone}
                             />
                         </Field>
-                        <Field error={errors.email} label="Email" name="edit_email">
+                        <Field
+                            error={errors.email}
+                            label="Email"
+                            name="edit_email"
+                        >
                             <Input
                                 aria-invalid={Boolean(errors.email)}
                                 id="edit_email"
-                                onChange={(event) => setData('email', event.target.value)}
+                                onChange={(event) =>
+                                    setData('email', event.target.value)
+                                }
                                 type="email"
                                 value={data.email}
                             />
                         </Field>
                         <div className="sm:col-span-2">
-                            <Field error={errors.address} label="Address" name="edit_address">
+                            <Field
+                                error={errors.address}
+                                label="Address"
+                                name="edit_address"
+                            >
                                 <Input
                                     aria-invalid={Boolean(errors.address)}
                                     id="edit_address"
-                                    onChange={(event) => setData('address', event.target.value)}
+                                    onChange={(event) =>
+                                        setData('address', event.target.value)
+                                    }
                                     placeholder="Full address"
                                     value={data.address}
                                 />
                             </Field>
                         </div>
-                        <Field error={errors.source} label="Source *" name="edit_source">
+                        <Field
+                            error={errors.source}
+                            label="Source *"
+                            name="edit_source"
+                        >
                             <Select
-                                onValueChange={(value) => setData('source', value)}
+                                onValueChange={(value) =>
+                                    setData('source', value)
+                                }
                                 value={data.source}
                             >
                                 <SelectTrigger
@@ -245,9 +275,15 @@ export function EditLeadDialog({
                                 </SelectContent>
                             </Select>
                         </Field>
-                        <Field error={errors.status} label="Status *" name="edit_status">
+                        <Field
+                            error={errors.status}
+                            label="Status *"
+                            name="edit_status"
+                        >
                             <Select
-                                onValueChange={(value) => setData('status', value)}
+                                onValueChange={(value) =>
+                                    setData('status', value)
+                                }
                                 value={data.status}
                             >
                                 <SelectTrigger
@@ -272,7 +308,9 @@ export function EditLeadDialog({
                             name="edit_priority"
                         >
                             <Select
-                                onValueChange={(value) => setData('priority', value)}
+                                onValueChange={(value) =>
+                                    setData('priority', value)
+                                }
                                 value={data.priority}
                             >
                                 <SelectTrigger
@@ -284,7 +322,10 @@ export function EditLeadDialog({
                                 </SelectTrigger>
                                 <SelectContent>
                                     {priorities.map((priority) => (
-                                        <SelectItem key={priority} value={priority}>
+                                        <SelectItem
+                                            key={priority}
+                                            value={priority}
+                                        >
                                             {priority}
                                         </SelectItem>
                                     ))}
@@ -300,7 +341,10 @@ export function EditLeadDialog({
                                 aria-invalid={Boolean(errors.interest_country)}
                                 id="edit_interest_country"
                                 onChange={(event) =>
-                                    setData('interest_country', event.target.value)
+                                    setData(
+                                        'interest_country',
+                                        event.target.value,
+                                    )
                                 }
                                 value={data.interest_country}
                             />
@@ -314,7 +358,9 @@ export function EditLeadDialog({
                                 onValueChange={(value) =>
                                     setData(
                                         'assigned_to_id',
-                                        value === 'unassigned' ? null : Number(value),
+                                        value === 'unassigned'
+                                            ? null
+                                            : Number(value),
                                     )
                                 }
                                 value={
@@ -324,16 +370,23 @@ export function EditLeadDialog({
                                 }
                             >
                                 <SelectTrigger
-                                    aria-invalid={Boolean(errors.assigned_to_id)}
+                                    aria-invalid={Boolean(
+                                        errors.assigned_to_id,
+                                    )}
                                     className="w-full"
                                     id="edit_assigned_to_id"
                                 >
                                     <SelectValue placeholder="Select a person" />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="unassigned">Unassigned</SelectItem>
+                                    <SelectItem value="unassigned">
+                                        Unassigned
+                                    </SelectItem>
                                     {users.map((user) => (
-                                        <SelectItem key={user.id} value={String(user.id)}>
+                                        <SelectItem
+                                            key={user.id}
+                                            value={String(user.id)}
+                                        >
                                             {user.name}
                                         </SelectItem>
                                     ))}

@@ -83,8 +83,8 @@ class LeadController extends Controller
         ];
 
         return LeadResource::collection($leads)->additional([
-            'status_counts' => Lead::query()->selectRaw('status, count(*) as total')->groupBy('status')->pluck('total', 'status'),
             'metrics' => $metrics,
+            'status_counts' => Lead::query()->selectRaw('status, count(*) as total')->groupBy('status')->pluck('total', 'status'),
         ]);
     }
 

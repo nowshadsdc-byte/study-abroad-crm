@@ -70,7 +70,11 @@ function downloadErrorReport(summary: ImportSummary): void {
     URL.revokeObjectURL(url);
 }
 
-export function BulkUniversityImport({ onImported }: { onImported?: () => void }) {
+export function BulkUniversityImport({
+    onImported,
+}: {
+    onImported?: () => void;
+}) {
     const [file, setFile] = useState<File | null>(null);
     const { data, response, setData, submit, processing } = useHttp<
         ImportForm,
@@ -151,7 +155,9 @@ export function BulkUniversityImport({ onImported }: { onImported?: () => void }
             </div>
 
             <div className="grid gap-2">
-                <Label htmlFor="bulk_university_file">Upload completed CSV</Label>
+                <Label htmlFor="bulk_university_file">
+                    Upload completed CSV
+                </Label>
                 <Input
                     accept=".csv,text/csv"
                     id="bulk_university_file"

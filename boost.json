@@ -1,3 +1,9 @@
 {
+    "agents": [
+        "claude_code",
+        "copilot",
+        "cursor",
+        "opencode"
+    ],
     "guidelines": true
 }

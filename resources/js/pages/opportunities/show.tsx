@@ -69,7 +69,12 @@ type Opportunity = {
     updated_at: string;
 };
 
-type OpportunityResponse = { data: Opportunity };
+import type { PaginationMeta } from '@/components/data-table/data-table';
+
+type OpportunityResponse = {
+    data: Opportunity;
+    applications_meta?: PaginationMeta;
+};
 
 const statusTone: Record<
     string,
@@ -122,10 +127,14 @@ export default function OpportunityShow({
     opportunityId: number;
 }) {
     const { can } = usePermission();
+    const [filters, setFilters] = useState<{ page?: number; search?: string }>({
+        page: 1,
+        search: '',
+    });
     const { response, submit } = useHttp<
-        Record<string, never>,
+        { page?: number; search?: string },
         OpportunityResponse
-    >(opportunityApi.show(opportunityId), {});
+    >(opportunityApi.show(opportunityId), filters);
     const destroyRequest = useHttp<Record<string, never>>(
         opportunityApi.destroy(opportunityId),
         {},
@@ -144,7 +153,7 @@ export default function OpportunityShow({
 
     useEffect(() => {
         void loadOpportunity();
-    }, [loadOpportunity]);
+    }, [filters, loadOpportunity]);
 
     const handleDelete = async (): Promise<void> => {
         try {
@@ -385,7 +394,19 @@ export default function OpportunityShow({
                                     columns={applicationColumns}
                                     data={opportunity.applications}
                                     emptyMessage="No applications yet."
-                                    searchPlaceholder="Search applications..."
+                                    searchPlaceholder="Search candidates..."
+                                    meta={response?.applications_meta}
+                                    onPageChange={(page) =>
+                                        setFilters((f) => ({ ...f, page }))
+                                    }
+                                    search={filters.search}
+                                    onSearchChange={(search) =>
+                                        setFilters((f) => ({
+                                            ...f,
+                                            search,
+                                            page: 1,
+                                        }))
+                                    }
                                 />
                             </CardContent>
                         </Card>

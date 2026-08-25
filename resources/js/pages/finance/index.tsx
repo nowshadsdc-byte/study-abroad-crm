@@ -9,6 +9,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import { CrmListPage } from '@/components/crm-list-page';
 import { DataTable } from '@/components/data-table/data-table';
+import type { PaginationMeta } from '@/components/data-table/data-table';
 import {
     Card,
     CardContent,
@@ -36,9 +37,22 @@ const statuses = ['Unpaid', 'Partial', 'Paid', 'Overdue', 'Cancelled'];
 
 type InvoiceFilters = {
     status: string;
+    page?: number;
+    search?: string;
 };
 
-const initialFilters: InvoiceFilters = { status: '' };
+function initialInvoiceFilters(): InvoiceFilters {
+    if (typeof window === 'undefined') {
+        return { status: '', page: 1 };
+    }
+
+    const searchParams = new URLSearchParams(window.location.search);
+
+    return {
+        status: searchParams.get('status') ?? '',
+        page: searchParams.has('page') ? Number(searchParams.get('page')) : 1,
+    };
+}
 
 type InvoiceApiRow = {
     id: number;
@@ -62,6 +76,7 @@ type InvoicesResponse = {
         overdue: number;
         total_invoiced: number;
     };
+    meta: PaginationMeta;
 };
 
 function mapInvoiceRow(invoice: InvoiceApiRow): InvoiceRow {
@@ -94,10 +109,15 @@ function useDebouncedEffect(
 }
 
 export default function FinanceIndex() {
-    const { data: filters, response, setData: setFilters, submit } = useHttp<
-        InvoiceFilters,
-        InvoicesResponse
-    >(invoiceApi.index(), initialFilters);
+    const {
+        data: filters,
+        response,
+        setData: setFilters,
+        submit,
+    } = useHttp<InvoiceFilters, InvoicesResponse>(
+        invoiceApi.index(),
+        initialInvoiceFilters(),
+    );
     const [payingInvoice, setPayingInvoice] = useState<InvoiceRow | null>(null);
 
     const loadInvoices = useCallback(async (): Promise<void> => {
@@ -187,12 +207,26 @@ export default function FinanceIndex() {
                                 router.visit(finance.show(invoice.id).url)
                             }
                             searchPlaceholder="Search by invoice #, client name, or email..."
+                            meta={response?.meta}
+                            onPageChange={(page) =>
+                                setFilters((current) => ({ ...current, page }))
+                            }
+                            search={filters.search}
+                            onSearchChange={(search) =>
+                                setFilters((current) => ({
+                                    ...current,
+                                    search,
+                                    page: 1,
+                                }))
+                            }
                             toolbar={
                                 <Select
                                     onValueChange={(value) =>
                                         setFilters((current) => ({
                                             ...current,
-                                            status: value === 'all' ? '' : value,
+                                            status:
+                                                value === 'all' ? '' : value,
+                                            page: 1,
                                         }))
                                     }
                                     value={filters.status || 'all'}

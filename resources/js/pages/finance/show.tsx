@@ -104,10 +104,10 @@ type InvoiceResponse = {
 
 export default function InvoiceShow({ invoiceId }: { invoiceId: number }) {
     const { can } = usePermission();
-    const { response, submit } = useHttp<Record<string, never>, InvoiceResponse>(
-        invoiceApi.show(invoiceId),
-        {},
-    );
+    const { response, submit } = useHttp<
+        Record<string, never>,
+        InvoiceResponse
+    >(invoiceApi.show(invoiceId), {});
     const [editOpen, setEditOpen] = useState(false);
     const [payOpen, setPayOpen] = useState(false);
     const [deleteOpen, setDeleteOpen] = useState(false);
@@ -239,27 +239,29 @@ export default function InvoiceShow({ invoiceId }: { invoiceId: number }) {
                             <Printer />
                             Print
                         </Button>
-                        {canEdit && balanceDue > 0 && invoice.status !== 'Cancelled' && (
-                            <>
-                                <Button
-                                    className="bg-linear-to-br from-primary to-teal-600 hover:opacity-90"
-                                    disabled={markPaidRequest.processing}
-                                    onClick={() => void handleMarkPaid()}
-                                    type="button"
-                                >
-                                    <CheckCircle2 />
-                                    Mark as Paid
-                                </Button>
-                                <Button
-                                    onClick={() => setPayOpen(true)}
-                                    type="button"
-                                    variant="outline"
-                                >
-                                    <HandCoins />
-                                    Mark as Partial
-                                </Button>
-                            </>
-                        )}
+                        {canEdit &&
+                            balanceDue > 0 &&
+                            invoice.status !== 'Cancelled' && (
+                                <>
+                                    <Button
+                                        className="bg-linear-to-br from-primary to-teal-600 hover:opacity-90"
+                                        disabled={markPaidRequest.processing}
+                                        onClick={() => void handleMarkPaid()}
+                                        type="button"
+                                    >
+                                        <CheckCircle2 />
+                                        Mark as Paid
+                                    </Button>
+                                    <Button
+                                        onClick={() => setPayOpen(true)}
+                                        type="button"
+                                        variant="outline"
+                                    >
+                                        <HandCoins />
+                                        Mark as Partial
+                                    </Button>
+                                </>
+                            )}
                     </div>
                     <div className="flex flex-wrap items-center gap-2">
                         {canEdit && invoice.status !== 'Cancelled' && (
@@ -370,7 +372,10 @@ export default function InvoiceShow({ invoiceId }: { invoiceId: number }) {
                             {invoice.candidate && (
                                 <Link
                                     className="mt-1 inline-block text-sm text-primary hover:underline print:hidden"
-                                    href={candidates.show(invoice.candidate.id).url}
+                                    href={
+                                        candidates.show(invoice.candidate.id)
+                                            .url
+                                    }
                                 >
                                     View candidate profile
                                 </Link>
@@ -435,7 +440,9 @@ export default function InvoiceShow({ invoiceId }: { invoiceId: number }) {
                                     </span>
                                 </div>
                                 <div className="flex justify-between text-muted-foreground">
-                                    <span>Tax ({Number(invoice.tax_rate)}%)</span>
+                                    <span>
+                                        Tax ({Number(invoice.tax_rate)}%)
+                                    </span>
                                     <span>
                                         {formatCurrency(
                                             invoice.tax_amount,

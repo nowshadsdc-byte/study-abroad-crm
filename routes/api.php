@@ -40,6 +40,7 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::post('invoices/{invoice}/payments', [InvoiceController::class, 'recordPayment'])->middleware('permission:finance.edit')->name('api.invoices.payments.store');
     Route::post('invoices/{invoice}/mark-paid', [InvoiceController::class, 'markAsPaid'])->middleware('permission:finance.edit')->name('api.invoices.mark-paid');
     Route::post('invoices/{invoice}/cancel', [InvoiceController::class, 'cancel'])->middleware('permission:finance.edit')->name('api.invoices.cancel');
+
     Route::get('leads', [LeadController::class, 'index'])->middleware('permission:lead.view')->name('api.leads.index');
     Route::post('leads', [LeadController::class, 'store'])->middleware('permission:lead.create')->name('api.leads.store');
     Route::get('leads/assignable-users', [LeadController::class, 'assignableUsers'])->middleware('permission:lead.edit')->name('api.leads.assignable-users');
