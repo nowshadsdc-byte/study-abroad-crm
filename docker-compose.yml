@@ -44,8 +44,6 @@ services:
         depends_on:
             app:
                 condition: service_started
-            node:
-                condition: service_healthy
         networks:
             - app-network
 
@@ -68,6 +66,7 @@ services:
             - app-network
 
     node:
+        profiles: ["dev"]
         build:
             context: .
             dockerfile: Dockerfile
