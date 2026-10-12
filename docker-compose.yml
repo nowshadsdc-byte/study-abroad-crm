@@ -42,7 +42,10 @@ services:
             - storage-data:/var/www/html/storage:ro
             - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
         depends_on:
-            - app
+            app:
+                condition: service_started
+            node:
+                condition: service_healthy
         networks:
             - app-network
 
@@ -72,16 +75,22 @@ services:
         image: confidenceglobalbd-node
         restart: unless-stopped
         working_dir: /var/www/html
-        command: ["npm", "run", "dev", "--", "--host", "0.0.0.0"]
+        command: ["sh", "-lc", "if [ ! -f node_modules/.docker-package-lock ] || ! cmp -s package-lock.json node_modules/.docker-package-lock; then npm install --package-lock=false --ignore-scripts && cp package-lock.json node_modules/.docker-package-lock; fi && npm run dev -- --host 0.0.0.0"]
         environment:
             VITE_HMR_HOST: ${VITE_HMR_HOST:-localhost}
         ports:
-            - "${VITE_PORT:-5175}:5173"
+            - "5175:5175"
         volumes:
             - .:/var/www/html
             - node-modules-data:/var/www/html/node_modules
         networks:
             - app-network
+        healthcheck:
+            test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:5175/@vite/client').then(response => process.exit(response.ok ? 0 : 1)).catch(() => process.exit(1))"]
+            interval: 5s
+            timeout: 3s
+            retries: 30
+            start_period: 10s
 
     queue:
         <<: *app

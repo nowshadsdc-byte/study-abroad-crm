@@ -69,7 +69,7 @@ RUN composer dump-autoload --no-interaction
 ##
 FROM base AS node_tools
 RUN apk add --no-cache nodejs npm
-RUN npm install --ignore-scripts
+RUN npm install --package-lock=false --ignore-scripts
 
 ##
 ## ---- Stage: frontend (compiles production Vite assets) ----
