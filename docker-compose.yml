@@ -76,7 +76,7 @@ services:
         environment:
             VITE_HMR_HOST: ${VITE_HMR_HOST:-localhost}
         ports:
-            - "${VITE_PORT:-5173}:5173"
+            - "${VITE_PORT:-5175}:5173"
         volumes:
             - .:/var/www/html
             - node-modules-data:/var/www/html/node_modules
