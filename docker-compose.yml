@@ -82,6 +82,7 @@ services:
             - "5175:5175"
         volumes:
             - .:/var/www/html
+            - vendor-data:/var/www/html/vendor
             - node-modules-data:/var/www/html/node_modules
         networks:
             - app-network
