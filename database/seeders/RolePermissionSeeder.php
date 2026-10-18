@@ -29,22 +29,30 @@ class RolePermissionSeeder extends Seeder
         $rolePermissions = [
             RoleEnum::Administrator->value => $allPermissionNames,
             RoleEnum::Manager->value => [
+                PermissionEnum::ChatView->value, PermissionEnum::ChatSend->value,
                 PermissionEnum::DashboardView->value, PermissionEnum::LeadView->value, PermissionEnum::LeadCreate->value, PermissionEnum::LeadEdit->value, PermissionEnum::LeadDelete->value,
                 PermissionEnum::CandidateCreate->value, PermissionEnum::CandidateEdit->value,
                 PermissionEnum::FinanceCreate->value, PermissionEnum::FinanceEdit->value,
                 PermissionEnum::OpportunityCreate->value, PermissionEnum::OpportunityEdit->value,
                 PermissionEnum::SettingsAccess->value,
+                PermissionEnum::TaskView->value, PermissionEnum::TaskCreate->value, PermissionEnum::TaskEditAny->value,
             ],
             RoleEnum::Counselor->value => [
+                PermissionEnum::ChatView->value, PermissionEnum::ChatSend->value,
                 PermissionEnum::DashboardView->value, PermissionEnum::LeadCreate->value, PermissionEnum::LeadView->value, PermissionEnum::LeadEdit->value,
                 PermissionEnum::CandidateCreate->value, PermissionEnum::CandidateView->value, PermissionEnum::CandidateEdit->value,
                 PermissionEnum::OpportunityView->value,
+                PermissionEnum::TaskView->value, PermissionEnum::TaskCreate->value,
             ],
             RoleEnum::FinanceOfficer->value => [
+                PermissionEnum::ChatView->value, PermissionEnum::ChatSend->value,
                 PermissionEnum::DashboardView->value, PermissionEnum::FinanceView->value, PermissionEnum::FinanceCreate->value, PermissionEnum::FinanceEdit->value, PermissionEnum::CandidateView->value,
+                PermissionEnum::TaskView->value, PermissionEnum::TaskCreate->value,
             ],
             RoleEnum::Receptionist->value => [
+                PermissionEnum::ChatView->value, PermissionEnum::ChatSend->value,
                 PermissionEnum::DashboardView->value, PermissionEnum::LeadView->value, PermissionEnum::LeadCreate->value, PermissionEnum::LeadEdit->value,
+                PermissionEnum::TaskView->value, PermissionEnum::TaskCreate->value,
             ],
         ];
 

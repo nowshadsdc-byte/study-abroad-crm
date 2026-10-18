@@ -17,6 +17,7 @@ x-app: &app
         DB_DATABASE: ${DB_DATABASE:-confidenceglobalbd}
         DB_USERNAME: ${DB_USERNAME:-root}
         DB_PASSWORD: ${DB_PASSWORD:-password}
+        CHAT_SOCKET_URL: http://chat-socket:3000
     volumes: &app-volumes
         - .:/var/www/html
         - vendor-data:/var/www/html/vendor
@@ -44,6 +45,23 @@ services:
         depends_on:
             app:
                 condition: service_started
+            chat-socket:
+                condition: service_healthy
+        networks:
+            - app-network
+
+    chat-socket:
+        build:
+            context: .
+            dockerfile: Dockerfile.socket
+        image: confidenceglobalbd-chat-socket
+        restart: unless-stopped
+        env_file:
+            - .env
+        environment:
+            PORT: 3000
+        expose:
+            - "3000"
         networks:
             - app-network
 
@@ -77,6 +95,7 @@ services:
         command: ["sh", "-lc", "if [ ! -f node_modules/.docker-package-lock ] || ! cmp -s package-lock.json node_modules/.docker-package-lock; then npm install --package-lock=false --ignore-scripts && cp package-lock.json node_modules/.docker-package-lock; fi && npm run dev -- --host 0.0.0.0"]
         environment:
             VITE_HMR_HOST: ${VITE_HMR_HOST:-localhost}
+            VITE_CHAT_SOCKET_URL: ${VITE_CHAT_SOCKET_URL:-http://localhost:${APP_PORT:-8000}}
         ports:
             - "5175:5175"
         volumes:
@@ -100,6 +119,8 @@ services:
                 condition: service_healthy
             app:
                 condition: service_started
+            chat-socket:
+                condition: service_healthy
 
     scheduler:
         <<: *app

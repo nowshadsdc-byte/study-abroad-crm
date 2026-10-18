@@ -8,10 +8,14 @@ use App\Models\Lead;
 use App\Models\Opportunity;
 use App\Models\University;
 use App\Models\User;
+use App\Services\DashboardService;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
 class DashboardController extends Controller
 {
+    public function __construct(protected DashboardService $dashboardService) {}
+
     /**
      * Summary metrics powering the dashboard's clickable overview cards.
      */
@@ -31,6 +35,29 @@ class DashboardController extends Controller
                 'active_universities' => University::query()->where('is_active', true)->count(),
                 'total_users' => User::query()->count(),
             ],
+        ]);
+    }
+
+    public function summary(Request $request): JsonResponse
+    {
+        $user = $request->user();
+
+        return response()->json($this->dashboardService->summary($user));
+    }
+
+    public function tasks(Request $request): JsonResponse
+    {
+        $scope = $request->query('scope', 'today');
+
+        return response()->json([
+            'data' => $this->dashboardService->tasks($request->user(), $scope),
+        ]);
+    }
+
+    public function deadlines(Request $request): JsonResponse
+    {
+        return response()->json([
+            'data' => $this->dashboardService->deadlines($request->user(), (int) $request->query('days', 14)),
         ]);
     }
 }

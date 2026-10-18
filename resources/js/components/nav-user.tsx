@@ -1,5 +1,5 @@
 import { usePage } from '@inertiajs/react';
-import { ChevronsUpDown } from 'lucide-react';
+import { ChevronsLeft } from 'lucide-react';
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -7,6 +7,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import {
     SidebarMenu,
+    SidebarMenuAction,
     SidebarMenuButton,
     SidebarMenuItem,
     useSidebar,
@@ -17,7 +18,7 @@ import { useIsMobile } from '@/hooks/use-mobile';
 
 export function NavUser() {
     const { auth } = usePage().props;
-    const { state } = useSidebar();
+    const { state, toggleSidebar } = useSidebar();
     const isMobile = useIsMobile();
 
     if (!auth.user) {
@@ -34,8 +35,10 @@ export function NavUser() {
                             className="group text-sidebar-accent-foreground data-[state=open]:bg-sidebar-accent"
                             data-test="sidebar-menu-button"
                         >
-                            <UserInfo user={auth.user} />
-                            <ChevronsUpDown className="ml-auto size-4" />
+                            <UserInfo
+                                user={auth.user}
+                                subtitle={auth.user.roles[0]}
+                            />
                         </SidebarMenuButton>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent
@@ -52,6 +55,15 @@ export function NavUser() {
                         <UserMenuContent user={auth.user} />
                     </DropdownMenuContent>
                 </DropdownMenu>
+                {!isMobile && state === 'expanded' && (
+                    <SidebarMenuAction
+                        onClick={toggleSidebar}
+                        aria-label="Collapse sidebar"
+                        className="text-sidebar-foreground/60"
+                    >
+                        <ChevronsLeft />
+                    </SidebarMenuAction>
+                )}
             </SidebarMenuItem>
         </SidebarMenu>
     );

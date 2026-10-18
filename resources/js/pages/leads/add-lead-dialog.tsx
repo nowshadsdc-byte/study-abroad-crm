@@ -86,8 +86,24 @@ function Field({ children, error, label, name }: FieldProps) {
     );
 }
 
-export function AddLeadDialog({ onCreated }: { onCreated?: () => void }) {
-    const [open, setOpen] = useState(false);
+export function AddLeadDialog({
+    onCreated,
+    open: controlledOpen,
+    onOpenChange,
+    showTrigger = true,
+}: {
+    onCreated?: () => void;
+    /** Control the dialog from outside, e.g. the global "New lead" button. */
+    open?: boolean;
+    onOpenChange?: (open: boolean) => void;
+    showTrigger?: boolean;
+}) {
+    const [uncontrolledOpen, setUncontrolledOpen] = useState(false);
+    const open = controlledOpen ?? uncontrolledOpen;
+    const setOpen = (isOpen: boolean): void => {
+        setUncontrolledOpen(isOpen);
+        onOpenChange?.(isOpen);
+    };
     const [mode, setMode] = useState<'single' | 'bulk'>('single');
     const { clearErrors, data, errors, processing, reset, setData, submit } =
         useHttp<LeadForm>(leadApi.store(), initialForm);
@@ -131,15 +147,17 @@ export function AddLeadDialog({ onCreated }: { onCreated?: () => void }) {
 
     return (
         <Dialog open={open} onOpenChange={handleOpenChange}>
-            <DialogTrigger asChild>
-                <Button
-                    className="bg-linear-to-br from-primary to-teal-600 hover:opacity-90"
-                    type="button"
-                >
-                    <Plus />
-                    Add Leads
-                </Button>
-            </DialogTrigger>
+            {showTrigger && (
+                <DialogTrigger asChild>
+                    <Button
+                        className="bg-linear-to-br from-primary to-teal-600 hover:opacity-90"
+                        type="button"
+                    >
+                        <Plus />
+                        Add Leads
+                    </Button>
+                </DialogTrigger>
+            )}
             <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-2xl">
                 <DialogHeader>
                     <DialogTitle className="flex items-center gap-2">

@@ -7,6 +7,7 @@ use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -69,5 +70,30 @@ class User extends Authenticatable implements PasskeyUser
     public function activities(): HasMany
     {
         return $this->hasMany(Activity::class);
+    }
+
+    public function assignedTasks(): HasMany
+    {
+        return $this->hasMany(Task::class, 'assigned_to_id');
+    }
+
+    public function createdTasks(): HasMany
+    {
+        return $this->hasMany(Task::class, 'created_by_id');
+    }
+
+    public function chatConversations(): BelongsToMany
+    {
+        return $this->belongsToMany(ChatConversation::class, 'chat_conversation_user')->withTimestamps();
+    }
+
+    public function sentChatMessages(): HasMany
+    {
+        return $this->hasMany(ChatMessage::class, 'sender_id');
+    }
+
+    public function chatMessageReceipts(): HasMany
+    {
+        return $this->hasMany(ChatMessageReceipt::class);
     }
 }

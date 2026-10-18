@@ -35,4 +35,8 @@ return [
         ],
     ],
 
+    'chat_socket' => [
+        'url' => env('CHAT_SOCKET_URL', 'http://127.0.0.1:3000'),
+    ],
+
 ];

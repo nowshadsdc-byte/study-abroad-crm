@@ -1,0 +1,1 @@
+export { default } from './login-page-view.jsx';

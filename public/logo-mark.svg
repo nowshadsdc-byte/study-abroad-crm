@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1829 1440" role="img" aria-labelledby="title">
+  <title id="title">Confidence Global Education mark</title>
+  <g fill="none" stroke="#e02424" stroke-width="20" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M100 742C28 738 22 636 86 602L612 292C700 244 708 124 628 94"/>
+    <path d="M704 130L866 214"/>
+    <path d="M170 570L908 196Q935 182 962 196L1810 600"/>
+    <path d="M170 618L908 246Q935 232 962 246L1810 648"/>
+    <path d="M170 668L908 296Q935 282 962 296L1810 700"/>
+    <path d="M1690 600V958"/>
+  </g>
+  <path fill="#b31f24" d="M428 186L612 94C700 126 708 232 612 290Z"/>
+  <path fill="#e02424" d="M100 745L912 344Q935 332 958 344L1815 758L1270 1045V800Q1270 700 948 690Q625 700 625 800V1030L605 1045Z"/>
+  <path fill="#b31f24" d="M435 962L625 778V1030L605 1045Z"/>
+  <path fill="#e02424" d="M1690 590V950" stroke="#e02424" stroke-width="20" stroke-linecap="round"/>
+  <circle cx="1700" cy="978" r="36" fill="#e02424"/>
+  <path fill="#e02424" d="M1682 1004H1718L1772 1142H1640Z"/>
+  <path fill="none" stroke="#e02424" stroke-width="58" d="M1004 880A86 86 0 1 0 1004 992"/>
+  <path fill="#e02424" stroke="#e02424" stroke-width="16" stroke-linejoin="round" d="M772 1126L950 1196L1124 1126V1354L950 1282L772 1354Z"/>
+</svg>

@@ -57,7 +57,7 @@
         ],
         "dev": [
             "Composer\\Config::disableProcessTimeout",
-            "npx concurrently -c \"#93c5fd,#c4b5fd,#fdba74\" \"php artisan serve\" \"php artisan queue:listen --tries=1\" \"npm run dev\" --names='server,queue,vite'"
+            "npx concurrently -c \"#93c5fd,#c4b5fd,#fdba74,#6ee7b7\" \"php artisan serve\" \"php artisan queue:listen --tries=1\" \"npm run dev\" \"node --env-file=.env socket-server/server.mjs\" --names='server,queue,vite,socket'"
         ],
         "lint": [
             "pint --parallel"

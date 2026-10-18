@@ -1,15 +1,4 @@
-import { Link } from '@inertiajs/react';
-import {
-    BadgeDollarSign,
-    BookOpen,
-    Building2,
-    ContactRound,
-    FolderGit2,
-    GraduationCap,
-    LayoutGrid,
-} from 'lucide-react';
-import AppLogo from '@/components/app-logo';
-import { NavFooter } from '@/components/nav-footer';
+import { Link, usePage } from '@inertiajs/react';
 import { NavMain } from '@/components/nav-main';
 import { NavUser } from '@/components/nav-user';
 import {
@@ -22,65 +11,62 @@ import {
     SidebarMenuItem,
 } from '@/components/ui/sidebar';
 import { usePermission } from '@/hooks/use-permission';
+import { visibleNavGroups } from '@/lib/navigation';
 import { dashboard } from '@/routes';
-import candidates from '@/routes/candidates';
-import finance from '@/routes/finance';
-import leads from '@/routes/leads';
-import opportunities from '@/routes/opportunities';
-import type { NavItem } from '@/types';
 
-const mainNavItems: NavItem[] = [
-    {
-        title: 'Dashboard',
-        href: dashboard(),
-        icon: LayoutGrid,
-    },
-    {
-        title: 'Leads',
-        href: leads.index(),
-        icon: ContactRound,
-    },
-    {
-        title: 'Candidates',
-        href: candidates.index(),
-        icon: GraduationCap,
-    },
-    {
-        title: 'Finance',
-        href: finance.index(),
-        icon: BadgeDollarSign,
-    },
-    {
-        title: 'Opportunities',
-        href: opportunities.index(),
-        icon: Building2,
-    },
-];
+function SidebarBrand() {
+    const { name, settings } = usePage<{
+        name: string;
+        settings?: { site_name?: string; site_logo?: string };
+    }>().props;
+    const siteName = settings?.site_name || name;
+    const markSource = settings?.site_logo
+        ? `/storage/${settings.site_logo}`
+        : '/logo-mark.svg';
 
-const footerNavItems: NavItem[] = [
-    // {
-    //     title: 'Repository',
-    //     href: 'https://github.com/laravel/react-starter-kit',
-    //     icon: FolderGit2,
-    // },
-    // {
-    //     title: 'Documentation',
-    //     href: 'https://laravel.com/docs/starter-kits#react',
-    //     icon: BookOpen,
-    // },
-];
+    return (
+        <>
+            <img
+                src={markSource}
+                onError={(event) => {
+                    event.currentTarget.src = '/logo-mark.svg';
+                }}
+                alt=""
+                className="h-auto w-10 shrink-0 object-contain group-data-[collapsible=icon]:w-6"
+            />
+            <div className="grid min-w-0 flex-1 gap-1 text-left group-data-[collapsible=icon]:hidden">
+                <span className="flex flex-col font-display text-[13px] leading-[1.15] font-black tracking-[0.06em] text-sidebar-foreground uppercase">
+                    <span>Confidence</span>
+                    <span>
+                        Gl<span className="text-sidebar-primary">o</span>bal
+                    </span>
+                    <span>Education</span>
+                </span>
+                <span className="truncate text-xs text-sidebar-foreground/60">
+                    {siteName}
+                </span>
+            </div>
+        </>
+    );
+}
 
 export function AppSidebar() {
     const { can } = usePermission();
 
+    const visibleGroups = visibleNavGroups(can);
+
     return (
         <Sidebar collapsible="icon" variant="inset">
-            <SidebarHeader>
+            <SidebarHeader className="px-3 pt-3">
                 <SidebarMenu>
                     <SidebarMenuItem>
-                        <SidebarMenuButton size="lg" asChild>
+                        <SidebarMenuButton
+                            size="lg"
+                            asChild
+                            className="h-auto gap-3 py-1 hover:bg-transparent active:bg-transparent"
+                        >
                             <Link href={dashboard()} prefetch>
-                                <AppLogo />
+                                <SidebarBrand />
                             </Link>
                         </SidebarMenuButton>
                     </SidebarMenuItem>
@@ -88,23 +74,10 @@ export function AppSidebar() {
             </SidebarHeader>
 
             <SidebarContent>
-                <NavMain
-                    items={mainNavItems.filter((item) => {
-                        const permissions: Record<string, string> = {
-                            Dashboard: 'dashboard.view',
-                            Leads: 'lead.view',
-                            Candidates: 'candidate.view',
-                            Finance: 'finance.view',
-                            Opportunities: 'opportunity.view',
-                        };
-
-                        return can(permissions[item.title]);
-                    })}
-                />
+                <NavMain groups={visibleGroups} />
             </SidebarContent>
 
-            <SidebarFooter>
-                <NavFooter items={footerNavItems} className="mt-auto" />
+            <SidebarFooter className="border-t border-sidebar-border">
                 <NavUser />
             </SidebarFooter>
         </Sidebar>

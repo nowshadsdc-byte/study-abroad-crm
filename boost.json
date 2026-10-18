@@ -5,5 +5,18 @@
         "cursor",
         "opencode"
     ],
-    "guidelines": true
+    "cloud": false,
+    "guidelines": true,
+    "skills": [
+        "infer-conventions",
+        "fortify-development",
+        "laravel-best-practices",
+        "wayfinder-development",
+        "pest-testing",
+        "inertia-react-development",
+        "tailwindcss-development",
+        "crm-csv-import",
+        "crm-module",
+        "crm-permissions"
+    ]
 }

@@ -5,6 +5,7 @@ namespace Tests\Feature\Auth;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\RateLimiter;
+use Inertia\Testing\AssertableInertia as Assert;
 use Laravel\Fortify\Features;
 use Tests\TestCase;
 
@@ -17,6 +18,33 @@ class AuthenticationTest extends TestCase
         $response = $this->get(route('login'));
 
         $response->assertOk();
+    }
+
+    public function test_login_screen_renders_the_login_page_with_quick_fill_accounts_outside_production()
+    {
+        $this->assertFileExists(resource_path('js/pages/auth/LoginPage.tsx'));
+
+        $this->get(route('login'))
+            ->assertOk()
+            ->assertInertia(fn (Assert $page) => $page
+                ->component('auth/LoginPage')
+                ->where('canResetPassword', Features::enabled(Features::resetPasswords()))
+                ->where('canRegister', Features::enabled(Features::registration()))
+                ->has('demoAccounts', 4)
+                ->where('demoAccounts.0.label', 'Admin')
+                ->missing('demoAccounts.0.workspace')
+                ->where('demoAccounts.3.label', 'Accounts'));
+    }
+
+    public function test_login_screen_never_exposes_quick_fill_accounts_in_production()
+    {
+        $this->app->detectEnvironment(fn () => 'production');
+
+        $this->get(route('login'))
+            ->assertOk()
+            ->assertInertia(fn (Assert $page) => $page
+                ->component('auth/LoginPage')
+                ->where('demoAccounts', []));
     }
 
     public function test_users_can_authenticate_using_the_login_screen()

@@ -54,4 +54,9 @@ class Candidate extends Model
     {
         return $this->hasMany(Activity::class, 'entity_id')->where('type', 'Candidate');
     }
+
+    public function tasks(): HasMany
+    {
+        return $this->hasMany(Task::class);
+    }
 }

@@ -5,9 +5,11 @@ import type { User } from '@/types';
 export function UserInfo({
     user,
     showEmail = false,
+    subtitle,
 }: {
     user: User;
     showEmail?: boolean;
+    subtitle?: string;
 }) {
     const getInitials = useInitials();
 
@@ -24,6 +26,11 @@ export function UserInfo({
                 {showEmail && (
                     <span className="truncate text-xs text-muted-foreground">
                         {user.email}
+                    </span>
+                )}
+                {subtitle && (
+                    <span className="truncate text-xs opacity-70">
+                        {subtitle}
                     </span>
                 )}
             </div>

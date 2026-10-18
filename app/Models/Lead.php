@@ -34,4 +34,9 @@ class Lead extends Model
     {
         return $this->hasMany(Activity::class, 'entity_id')->where('type', 'Lead');
     }
+
+    public function tasks(): HasMany
+    {
+        return $this->hasMany(Task::class);
+    }
 }

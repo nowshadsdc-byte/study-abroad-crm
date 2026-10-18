@@ -24,10 +24,21 @@ function userWithRole(RoleEnum $role): User
 
 test('the seeder assigns the expected permissions to each role', function () {
     expect(Role::findByName(RoleEnum::Administrator->value)->permissions)->toHaveCount(count(PermissionEnum::cases()))
-        ->and(Role::findByName(RoleEnum::Manager->value)->permissions)->toHaveCount(12)
-        ->and(Role::findByName(RoleEnum::Counselor->value)->permissions)->toHaveCount(8)
-        ->and(Role::findByName(RoleEnum::FinanceOfficer->value)->permissions)->toHaveCount(5)
-        ->and(Role::findByName(RoleEnum::Receptionist->value)->permissions)->toHaveCount(4);
+        ->and(Role::findByName(RoleEnum::Manager->value)->permissions)->toHaveCount(17)
+        ->and(Role::findByName(RoleEnum::Counselor->value)->permissions)->toHaveCount(12)
+        ->and(Role::findByName(RoleEnum::FinanceOfficer->value)->permissions)->toHaveCount(9)
+        ->and(Role::findByName(RoleEnum::Receptionist->value)->permissions)->toHaveCount(8);
+});
+
+test('every staff role can open my day and only managers may edit any task', function () {
+    foreach ([RoleEnum::Manager, RoleEnum::Counselor, RoleEnum::FinanceOfficer, RoleEnum::Receptionist] as $role) {
+        $user = userWithRole($role);
+
+        $this->actingAs($user)->get(route('my-day'))->assertOk();
+        expect($user->can('task.create'))->toBeTrue()
+            ->and($user->can('task.edit_any'))->toBe($role === RoleEnum::Manager)
+            ->and($user->can('task.delete_any'))->toBeFalse();
+    }
 });
 
 test('administrator bypasses all gate checks', function () {

@@ -22,4 +22,11 @@ enum PermissionEnum: string
     case OpportunityEdit = 'opportunity.edit';
     case OpportunityDelete = 'opportunity.delete';
     case SettingsAccess = 'settings.access';
+    case TaskView = 'task.view';
+    case TaskCreate = 'task.create';
+    case TaskEditAny = 'task.edit_any';
+    case TaskDeleteAny = 'task.delete_any';
+    case ChatView = 'chat.view';
+    case ChatSend = 'chat.send';
+    case ChatAnnounce = 'chat.announce';
 }

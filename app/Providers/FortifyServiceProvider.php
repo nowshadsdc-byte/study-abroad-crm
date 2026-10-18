@@ -48,9 +48,11 @@ class FortifyServiceProvider extends ServiceProvider
      */
     private function configureViews(): void
     {
-        Fortify::loginView(fn (Request $request) => Inertia::render('auth/login', [
+        Fortify::loginView(fn (Request $request) => Inertia::render('auth/LoginPage', [
             'canResetPassword' => Features::enabled(Features::resetPasswords()),
+            'canRegister' => Features::enabled(Features::registration()),
             'status' => $request->session()->get('status'),
+            'demoAccounts' => $this->demoAccounts(),
         ]));
 
         Fortify::resetPasswordView(fn (Request $request) => Inertia::render('auth/reset-password', [
@@ -74,6 +76,29 @@ class FortifyServiceProvider extends ServiceProvider
         Fortify::twoFactorChallengeView(fn () => Inertia::render('auth/two-factor-challenge'));
 
         Fortify::confirmPasswordView(fn () => Inertia::render('auth/confirm-password'));
+    }
+
+    /**
+     * Demo credentials for the login page's quick-fill chips. Never exposed in production.
+     *
+     * @return array<int, array{label: string, email: string, password: string}>
+     */
+    private function demoAccounts(): array
+    {
+        if ($this->app->isProduction()) {
+            return [];
+        }
+
+        return collect([
+            'Admin' => 'joy@demo.meridian.test',
+            'Junior Counselor' => 'nabila@demo.meridian.test',
+            'Counselor' => 'rakib@demo.meridian.test',
+            'Accounts' => 'tasnim@demo.meridian.test',
+        ])->map(fn (string $email, string $label): array => [
+            'label' => $label,
+            'email' => $email,
+            'password' => 'Meridian-demo-2026',
+        ])->values()->all();
     }
 
     /**

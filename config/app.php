@@ -68,6 +68,13 @@ return [
     'timezone' => 'UTC',
 
     /*
+    | Business timezone used to decide what "today" means for due dates
+    | (e.g. My Day tasks). Stored timestamps stay in the app timezone.
+    */
+
+    'business_timezone' => env('APP_BUSINESS_TIMEZONE', 'Asia/Dhaka'),
+
+    /*
     |--------------------------------------------------------------------------
     | Application Locale Configuration
     |--------------------------------------------------------------------------

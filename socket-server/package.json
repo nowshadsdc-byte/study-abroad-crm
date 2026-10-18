@@ -1,0 +1,14 @@
+{
+  "name": "confidenceglobalbd-chat-socket",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=20.6"
+  },
+  "scripts": {
+    "start": "node server.mjs"
+  },
+  "dependencies": {
+    "socket.io": "^4.8.1"
+  }
+}
