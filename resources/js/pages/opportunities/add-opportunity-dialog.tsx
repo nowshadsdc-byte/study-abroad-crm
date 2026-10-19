@@ -36,6 +36,16 @@ export type UniversityOption = {
     country: string | null;
 };
 
+export type OpportunityEligibilityCriteria = {
+    minimum_ielts_band: number | null;
+    minimum_gpa: number | null;
+    maximum_study_gap_years: number | null;
+    minimum_education_level: string | null;
+    required_subjects: string[];
+    minimum_work_experience_years: number | null;
+    accepted_qualification_countries: string[];
+};
+
 export type OpportunityForm = {
     university_id: number | null;
     title: string;
@@ -47,6 +57,7 @@ export type OpportunityForm = {
     currency: string;
     scholarship: string;
     requirements: string;
+    eligibility_criteria: OpportunityEligibilityCriteria;
     status: string;
 };
 
@@ -61,8 +72,31 @@ export const initialOpportunityForm: OpportunityForm = {
     currency: 'USD',
     scholarship: '',
     requirements: '',
+    eligibility_criteria: {
+        minimum_ielts_band: null,
+        minimum_gpa: null,
+        maximum_study_gap_years: null,
+        minimum_education_level: null,
+        required_subjects: [],
+        minimum_work_experience_years: null,
+        accepted_qualification_countries: [],
+    },
     status: 'Open',
 };
+
+const educationLevels = [
+    'Below Secondary / SSC',
+    'SSC / Secondary School Certificate',
+    'HSC / Higher Secondary Certificate',
+    'Diploma',
+    "Bachelor's Degree",
+    "Master's Degree",
+    'MPhil',
+    'PhD / Doctorate',
+    'Professional Qualification',
+    'Vocational / Technical Qualification',
+    'Other',
+];
 
 type FieldProps = {
     children: React.ReactNode;
@@ -89,7 +123,8 @@ export function OpportunityFormFields({
     idPrefix = '',
 }: {
     data: OpportunityForm;
-    errors: Partial<Record<keyof OpportunityForm, string>>;
+    errors: Partial<Record<keyof OpportunityForm, string>> &
+        Record<string, string | undefined>;
     setData: <K extends keyof OpportunityForm>(
         key: K,
         value: OpportunityForm[K],
@@ -97,6 +132,16 @@ export function OpportunityFormFields({
     universities: UniversityOption[];
     idPrefix?: string;
 }) {
+    const updateCriteria = <K extends keyof OpportunityEligibilityCriteria>(
+        key: K,
+        value: OpportunityEligibilityCriteria[K],
+    ): void => {
+        setData('eligibility_criteria', {
+            ...data.eligibility_criteria,
+            [key]: value,
+        });
+    };
+
     return (
         <div className="grid gap-4 sm:grid-cols-2">
             <Field
@@ -288,6 +333,220 @@ export function OpportunityFormFields({
                     value={data.scholarship}
                 />
             </Field>
+            <section className="col-span-full grid gap-3 rounded-lg border bg-muted/20 p-4">
+                <div>
+                    <h3 className="text-sm font-semibold">
+                        Eligibility criteria
+                    </h3>
+                    <p className="mt-1 text-xs text-muted-foreground">
+                        Enter confirmed programme requirements. Unstructured
+                        requirements below are always sent for manual review.
+                    </p>
+                </div>
+                <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+                    <Field
+                        error={
+                            errors['eligibility_criteria.minimum_ielts_band']
+                        }
+                        label="Minimum IELTS / band"
+                        name={`${idPrefix}minimum_ielts_band`}
+                    >
+                        <Input
+                            id={`${idPrefix}minimum_ielts_band`}
+                            min="0"
+                            max="9"
+                            step="0.5"
+                            type="number"
+                            value={
+                                data.eligibility_criteria.minimum_ielts_band ??
+                                ''
+                            }
+                            onChange={(event) =>
+                                updateCriteria(
+                                    'minimum_ielts_band',
+                                    event.target.value === ''
+                                        ? null
+                                        : Number(event.target.value),
+                                )
+                            }
+                        />
+                    </Field>
+                    <Field
+                        error={errors['eligibility_criteria.minimum_gpa']}
+                        label="Minimum CGPA (out of 5)"
+                        name={`${idPrefix}minimum_gpa`}
+                    >
+                        <Input
+                            id={`${idPrefix}minimum_gpa`}
+                            min="0"
+                            max="5"
+                            step="0.01"
+                            type="number"
+                            value={
+                                data.eligibility_criteria.minimum_gpa ?? ''
+                            }
+                            onChange={(event) =>
+                                updateCriteria(
+                                    'minimum_gpa',
+                                    event.target.value === ''
+                                        ? null
+                                        : Number(event.target.value),
+                                )
+                            }
+                        />
+                    </Field>
+                    <Field
+                        error={
+                            errors[
+                                'eligibility_criteria.maximum_study_gap_years'
+                            ]
+                        }
+                        label="Maximum study gap (years)"
+                        name={`${idPrefix}maximum_study_gap_years`}
+                    >
+                        <Input
+                            id={`${idPrefix}maximum_study_gap_years`}
+                            min="0"
+                            max="100"
+                            step="1"
+                            type="number"
+                            value={
+                                data.eligibility_criteria
+                                    .maximum_study_gap_years ?? ''
+                            }
+                            onChange={(event) =>
+                                updateCriteria(
+                                    'maximum_study_gap_years',
+                                    event.target.value === ''
+                                        ? null
+                                        : Number(event.target.value),
+                                )
+                            }
+                        />
+                    </Field>
+                    <Field
+                        error={
+                            errors[
+                                'eligibility_criteria.minimum_education_level'
+                            ]
+                        }
+                        label="Minimum prior education"
+                        name={`${idPrefix}minimum_education_level`}
+                    >
+                        <Select
+                            value={
+                                data.eligibility_criteria
+                                    .minimum_education_level ?? 'none'
+                            }
+                            onValueChange={(value) =>
+                                updateCriteria(
+                                    'minimum_education_level',
+                                    value === 'none' ? null : value,
+                                )
+                            }
+                        >
+                            <SelectTrigger
+                                id={`${idPrefix}minimum_education_level`}
+                                className="w-full"
+                            >
+                                <SelectValue placeholder="Not specified" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="none">Not specified</SelectItem>
+                                {educationLevels.map((educationLevel) => (
+                                    <SelectItem
+                                        key={educationLevel}
+                                        value={educationLevel}
+                                    >
+                                        {educationLevel}
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                    </Field>
+                    <Field
+                        error={
+                            errors[
+                                'eligibility_criteria.minimum_work_experience_years'
+                            ]
+                        }
+                        label="Minimum work experience (years)"
+                        name={`${idPrefix}minimum_work_experience_years`}
+                    >
+                        <Input
+                            id={`${idPrefix}minimum_work_experience_years`}
+                            min="0"
+                            max="80"
+                            step="0.5"
+                            type="number"
+                            value={
+                                data.eligibility_criteria
+                                    .minimum_work_experience_years ?? ''
+                            }
+                            onChange={(event) =>
+                                updateCriteria(
+                                    'minimum_work_experience_years',
+                                    event.target.value === ''
+                                        ? null
+                                        : Number(event.target.value),
+                                )
+                            }
+                        />
+                    </Field>
+                    <Field
+                        error={
+                            errors['eligibility_criteria.required_subjects']
+                        }
+                        label="Required subjects (one per line)"
+                        name={`${idPrefix}required_subjects`}
+                    >
+                        <textarea
+                            id={`${idPrefix}required_subjects`}
+                            className="min-h-20 w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-xs outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50"
+                            value={
+                                data.eligibility_criteria.required_subjects.join(
+                                    '\n',
+                                )
+                            }
+                            onChange={(event) =>
+                                updateCriteria(
+                                    'required_subjects',
+                                    event.target.value
+                                        .split('\n')
+                                        .map((subject) => subject.trim())
+                                        .filter(Boolean),
+                                )
+                            }
+                        />
+                    </Field>
+                    <Field
+                        error={
+                            errors[
+                                'eligibility_criteria.accepted_qualification_countries'
+                            ]
+                        }
+                        label="Accepted qualification countries (one per line)"
+                        name={`${idPrefix}accepted_qualification_countries`}
+                    >
+                        <textarea
+                            id={`${idPrefix}accepted_qualification_countries`}
+                            className="min-h-20 w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-xs outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50"
+                            value={data.eligibility_criteria.accepted_qualification_countries.join(
+                                '\n',
+                            )}
+                            onChange={(event) =>
+                                updateCriteria(
+                                    'accepted_qualification_countries',
+                                    event.target.value
+                                        .split('\n')
+                                        .map((country) => country.trim())
+                                        .filter(Boolean),
+                                )
+                            }
+                        />
+                    </Field>
+                </div>
+            </section>
             <Field
                 error={errors.requirements}
                 label="Requirements (one per line)"

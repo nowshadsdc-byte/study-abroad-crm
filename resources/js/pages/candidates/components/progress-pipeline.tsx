@@ -3,7 +3,15 @@ import { Check, Clock, Edit2, Play, SkipForward } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
+import { cn } from '@/lib/utils';
 import candidateApi from '@/routes/api/candidates';
 import { ApplicationStepDialog } from './application-step-dialog';
 import type { ApplicationProgress } from './application-step-dialog';
@@ -11,7 +19,10 @@ import type { ApplicationProgress } from './application-step-dialog';
 type ProgressRecord = ApplicationProgress & {
     step: string;
     completed_at: string | null;
+    outcome?: VisaOutcome | null;
 };
+
+type VisaOutcome = 'Approved' | 'Refused';
 
 const STEPS = [
     'Application',
@@ -29,6 +40,7 @@ const emptyRecord = (step: string): ProgressRecord => ({
     status: 'Pending',
     notes: null,
     completed_at: null,
+    outcome: null,
     opportunity_id: null,
     opportunity: null,
 });
@@ -67,6 +79,101 @@ function StepConnector({ isLast }: { isLast: boolean }) {
                 <div className="absolute top-10 bottom-[-2rem] left-6 -z-10 w-0.5 bg-gray-200 md:hidden dark:bg-gray-800" />
             )}
         </>
+    );
+}
+
+const visaOutcomeClass: Record<VisaOutcome, string> = {
+    Approved:
+        'border-emerald-500/30 bg-emerald-500/10 text-emerald-700 dark:text-emerald-400',
+    Refused:
+        'border-rose-500/30 bg-rose-500/10 text-rose-700 dark:text-rose-400',
+};
+
+/**
+ * The visa decision. Recording one completes the step; "Awaiting" reopens it.
+ */
+function VisaDecision({
+    candidateId,
+    record,
+    canEdit,
+    onChanged,
+}: {
+    candidateId: number;
+    record: ProgressRecord;
+    canEdit: boolean;
+    onChanged: () => void;
+}) {
+    const form = useHttp<{
+        status: string;
+        outcome: VisaOutcome | null;
+        notes: string;
+        opportunity_id: number | null;
+    }>(candidateApi.progress.update([candidateId, record.id]), {
+        status: record.status,
+        outcome: record.outcome ?? null,
+        notes: record.notes ?? '',
+        opportunity_id: record.opportunity_id,
+    });
+    const outcome = record.outcome ?? null;
+
+    if (!canEdit || record.id === 0) {
+        return outcome ? (
+            <span
+                className={cn(
+                    'mt-1 rounded-full border px-2 py-0.5 text-[10px] font-medium',
+                    visaOutcomeClass[outcome],
+                )}
+            >
+                Visa {outcome}
+            </span>
+        ) : null;
+    }
+
+    const decide = async (value: string): Promise<void> => {
+        const nextOutcome =
+            value === 'awaiting' ? null : (value as VisaOutcome);
+
+        form.transform(() => ({
+            status: nextOutcome ? 'Completed' : 'In Progress',
+            outcome: nextOutcome,
+            notes: record.notes ?? '',
+            opportunity_id: record.opportunity_id,
+        }));
+
+        try {
+            await form.submit();
+            toast.success(
+                nextOutcome
+                    ? `Visa marked ${nextOutcome.toLowerCase()}.`
+                    : 'Visa decision cleared.',
+            );
+            onChanged();
+        } catch {
+            toast.error('Could not record the visa decision.');
+        }
+    };
+
+    return (
+        <Select
+            value={outcome ?? 'awaiting'}
+            onValueChange={(value) => void decide(value)}
+            disabled={form.processing}
+        >
+            <SelectTrigger
+                aria-label="Visa decision"
+                className={cn(
+                    'mt-2 h-7 w-[130px] text-xs',
+                    outcome && visaOutcomeClass[outcome],
+                )}
+            >
+                <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+                <SelectItem value="awaiting">Awaiting decision</SelectItem>
+                <SelectItem value="Approved">Approved</SelectItem>
+                <SelectItem value="Refused">Refused</SelectItem>
+            </SelectContent>
+        </Select>
     );
 }
 
@@ -152,6 +259,15 @@ function GenericStep({
                 <span className="text-xs text-muted-foreground">
                     {record.status}
                 </span>
+                {record.step === 'Visa' && (
+                    <VisaDecision
+                        key={`${record.id}-${record.outcome ?? 'none'}-${record.status}`}
+                        candidateId={candidateId}
+                        record={record}
+                        canEdit={canEdit}
+                        onChanged={onChanged}
+                    />
+                )}
 
                 {canEdit && record.id !== 0 && !isEditing && (
                     <div className="group/note relative mt-2 w-full max-w-[150px] text-xs break-all text-muted-foreground md:text-center">

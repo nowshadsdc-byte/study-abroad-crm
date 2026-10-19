@@ -48,13 +48,18 @@ class CandidateService
             if ($progress->step === 'Application' && $attributes['status'] === 'Completed' && empty($attributes['opportunity_id'] ?? null)) {
                 $attributes['status'] = 'Pending';
             }
+            if (! empty($attributes['outcome'])) {
+                $attributes['status'] = 'Completed';
+            } elseif ($attributes['status'] !== 'Completed') {
+                $attributes['outcome'] = null;
+            }
             $previousOpportunityId = $progress->opportunity_id;
             $progress->update([...$attributes, 'completed_at' => $attributes['status'] === 'Completed' ? now() : null]);
             if ($progress->step === 'Application') {
                 $this->syncApplicationFromProgress($candidate, $progress, $previousOpportunityId);
             }
             $this->recalculateCompletion($candidate);
-            $this->activity($candidate, $actor, 'progress_updated', "{$progress->step} marked {$progress->status}");
+            $this->activity($candidate, $actor, 'progress_updated', "{$progress->step} marked {$progress->status}".($progress->outcome ? " ({$progress->outcome})" : ''));
 
             return $candidate->fresh(['progressRecords.opportunity.university', 'applications.opportunity.university']);
         });

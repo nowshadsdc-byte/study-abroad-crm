@@ -1,17 +1,21 @@
 <?php
 
+use App\Http\Controllers\Api\CalendarController;
 use App\Http\Controllers\Api\CandidateController;
 use App\Http\Controllers\Api\CandidateDocumentController;
 use App\Http\Controllers\Api\CandidateImportController;
 use App\Http\Controllers\Api\CandidateProgressController;
 use App\Http\Controllers\Api\ChatController;
 use App\Http\Controllers\Api\DashboardController;
+use App\Http\Controllers\Api\DocumentsController;
+use App\Http\Controllers\Api\EligibilityController;
 use App\Http\Controllers\Api\InvoiceController;
 use App\Http\Controllers\Api\LeadController;
 use App\Http\Controllers\Api\LeadFollowUpController;
 use App\Http\Controllers\Api\LeadImportController;
 use App\Http\Controllers\Api\OpportunityController;
 use App\Http\Controllers\Api\OpportunityImportController;
+use App\Http\Controllers\Api\ReportController;
 use App\Http\Controllers\Api\TaskActivityController;
 use App\Http\Controllers\Api\TaskChecklistItemController;
 use App\Http\Controllers\Api\TaskController;
@@ -32,10 +36,15 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::post('chat/announcements', [ChatController::class, 'announce'])->middleware(['permission:chat.announce', 'throttle:10,1'])->name('api.chat.announcements.store');
     Route::get('chat/attachments/{attachment}/download', [ChatController::class, 'download'])->middleware('permission:chat.view')->name('api.chat.attachments.download');
 
+    Route::get('reports', [ReportController::class, 'index'])->middleware('permission:report.view')->name('api.reports.index');
+    Route::get('calendar', [CalendarController::class, 'index'])->middleware('permission:task.view')->name('api.calendar.index');
     Route::get('dashboard/metrics', [DashboardController::class, 'metrics'])->middleware('permission:dashboard.view')->name('api.dashboard.metrics');
     Route::get('dashboard/summary', [DashboardController::class, 'summary'])->middleware('permission:dashboard.view')->name('api.dashboard.summary');
     Route::get('dashboard/tasks', [DashboardController::class, 'tasks'])->middleware('permission:dashboard.view')->name('api.dashboard.tasks');
     Route::get('dashboard/deadlines', [DashboardController::class, 'deadlines'])->middleware('permission:dashboard.view')->name('api.dashboard.deadlines');
+    Route::get('documents', [DocumentsController::class, 'index'])->middleware('permission:candidate.view')->name('api.documents.index');
+    Route::get('eligibility/students/{type}/{id}', [EligibilityController::class, 'student'])->whereIn('type', ['lead', 'candidate'])->whereNumber('id')->middleware('permission:opportunity.view')->name('api.eligibility.students.show');
+    Route::post('eligibility/evaluate', [EligibilityController::class, 'evaluate'])->middleware('permission:opportunity.view')->name('api.eligibility.evaluate');
     Route::get('candidates', [CandidateController::class, 'index'])->middleware('permission:candidate.view')->name('api.candidates.index');
     Route::post('candidates', [CandidateController::class, 'store'])->middleware('permission:candidate.create')->name('api.candidates.store');
     Route::get('candidates/assignable-users', [CandidateController::class, 'assignableUsers'])->middleware('permission:candidate.edit')->name('api.candidates.assignable-users');

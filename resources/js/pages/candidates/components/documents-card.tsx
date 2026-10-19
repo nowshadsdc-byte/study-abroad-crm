@@ -1,4 +1,5 @@
 import { router, useHttp } from '@inertiajs/react';
+import { formatDistanceToNow } from 'date-fns';
 import {
     Download,
     Eye,
@@ -39,7 +40,6 @@ import {
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import candidateApi from '@/routes/api/candidates';
-import { formatDistanceToNow } from 'date-fns';
 
 type DocumentRecord = {
     id: number;
@@ -68,11 +68,13 @@ export function DocumentsCard({
     documents,
     canEdit = true,
     onChanged,
+    compact = false,
 }: {
     candidateId: number;
     documents: DocumentRecord[];
     canEdit?: boolean;
     onChanged?: () => void;
+    compact?: boolean;
 }) {
     const [uploadOpen, setUploadOpen] = useState(false);
     const [uploading, setUploading] = useState(false);
@@ -105,14 +107,20 @@ export function DocumentsCard({
 
     const handleUpload = (e: React.FormEvent) => {
         e.preventDefault();
-        if (!file) return toast.error('Please select a file');
+
+        if (!file) {
+            return toast.error('Please select a file');
+        }
 
         setUploading(true);
         const formData = new FormData();
         formData.append('name', name);
         formData.append('type', type);
         formData.append('file', file);
-        if (notes) formData.append('notes', notes);
+
+        if (notes) {
+            formData.append('notes', notes);
+        }
 
         router.post(candidateApi.documents.store(candidateId).url, formData, {
             preserveScroll: true,
@@ -123,6 +131,7 @@ export function DocumentsCard({
                 setFile(null);
                 setName('');
                 setNotes('');
+                onChanged?.();
             },
             onError: () => toast.error('Failed to upload document'),
             onFinish: () => setUploading(false),
@@ -130,7 +139,9 @@ export function DocumentsCard({
     };
 
     const updateStatus = async (docId: number, status: string) => {
-        if (!canEdit) return;
+        if (!canEdit) {
+            return;
+        }
 
         statusForm.setData('status', status);
 
@@ -146,7 +157,9 @@ export function DocumentsCard({
     };
 
     const deleteDocument = async (docId: number) => {
-        if (!confirm('Are you sure you want to delete this document?')) return;
+        if (!confirm('Are you sure you want to delete this document?')) {
+            return;
+        }
 
         try {
             await deleteForm.delete(
@@ -160,8 +173,14 @@ export function DocumentsCard({
     };
 
     const getStatusColor = (status: string) => {
-        if (status === 'Verified') return 'default';
-        if (status === 'Rejected') return 'destructive';
+        if (status === 'Verified') {
+            return 'default';
+        }
+
+        if (status === 'Rejected') {
+            return 'destructive';
+        }
+
         return 'secondary';
     };
 
@@ -169,9 +188,13 @@ export function DocumentsCard({
         <Card>
             <CardHeader className="flex flex-row items-center justify-between">
                 <div>
-                    <CardTitle>Documents</CardTitle>
+                    <CardTitle>
+                        {compact ? 'Upload Student Document' : 'Documents'}
+                    </CardTitle>
                     <CardDescription>
-                        Required files and verification status
+                        {compact
+                            ? 'Keep application files and supporting records together.'
+                            : 'Required files and verification status'}
                     </CardDescription>
                 </div>
                 {canEdit && (
@@ -181,7 +204,8 @@ export function DocumentsCard({
                                 size="sm"
                                 className="bg-linear-to-br from-primary to-teal-600"
                             >
-                                <Plus className="mr-1 size-4" /> Add Document
+                                <Plus className="mr-1 size-4" />
+                                {compact ? 'Attach Document' : 'Add Document'}
                             </Button>
                         </DialogTrigger>
                         <DialogContent>
@@ -259,7 +283,28 @@ export function DocumentsCard({
                 )}
             </CardHeader>
             <CardContent>
-                {documents.length === 0 ? (
+                {compact ? (
+                    <div className="flex items-center gap-3 rounded-md border border-primary/20 bg-primary/5 p-3">
+                        <span className="grid size-9 shrink-0 place-items-center rounded-md bg-primary/10 text-primary">
+                            <FileText className="size-4" />
+                        </span>
+                        <div className="min-w-0">
+                            <p className="truncate text-sm font-medium">
+                                {documents.length} document
+                                {documents.length === 1 ? '' : 's'} on file
+                            </p>
+                            <p className="text-xs text-muted-foreground">
+                                {
+                                    documents.filter(
+                                        (document) =>
+                                            document.status === 'Verified',
+                                    ).length
+                                }{' '}
+                                verified
+                            </p>
+                        </div>
+                    </div>
+                ) : documents.length === 0 ? (
                     <div className="flex flex-col items-center py-8 text-muted-foreground">
                         <FileText className="mb-2 size-8 opacity-50" />
                         <p className="text-sm">No documents uploaded yet.</p>
@@ -310,7 +355,7 @@ export function DocumentsCard({
                                             }
                                         >
                                             <SelectTrigger
-                                                className={`h-8 w-[110px] text-xs ${doc.status === 'Rejected' ? 'border-destructive text-destructive' : ''}`}
+                                                className={`h-8 w-27.5 text-xs ${doc.status === 'Rejected' ? 'border-destructive text-destructive' : ''}`}
                                             >
                                                 <SelectValue />
                                             </SelectTrigger>

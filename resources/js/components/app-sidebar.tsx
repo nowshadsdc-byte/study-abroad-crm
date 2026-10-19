@@ -1,10 +1,13 @@
 import { Link, usePage } from '@inertiajs/react';
+import { MessageCircle } from 'lucide-react';
 import { NavMain } from '@/components/nav-main';
 import { NavUser } from '@/components/nav-user';
 import {
     Sidebar,
     SidebarContent,
     SidebarFooter,
+    SidebarGroup,
+    SidebarGroupLabel,
     SidebarHeader,
     SidebarMenu,
     SidebarMenuButton,
@@ -75,6 +78,29 @@ export function AppSidebar() {
 
             <SidebarContent>
                 <NavMain groups={visibleGroups} />
+                {can('chat.view') && (
+                    <SidebarGroup className="px-3 py-0 pt-2">
+                        <SidebarGroupLabel className="h-7 px-2 text-[11px] font-semibold tracking-wider text-sidebar-foreground/60 uppercase">
+                            Communication
+                        </SidebarGroupLabel>
+                        <SidebarMenu>
+                            <SidebarMenuItem>
+                                <SidebarMenuButton
+                                    className="relative h-10 gap-3 px-3 text-sm font-medium text-sidebar-foreground/85 [&>svg]:size-[18px]! [&>svg]:stroke-[1.75]"
+                                    tooltip="Inbox"
+                                    onClick={() =>
+                                        window.dispatchEvent(
+                                            new Event('crm:chat:open'),
+                                        )
+                                    }
+                                >
+                                    <MessageCircle />
+                                    <span>Inbox</span>
+                                </SidebarMenuButton>
+                            </SidebarMenuItem>
+                        </SidebarMenu>
+                    </SidebarGroup>
+                )}
             </SidebarContent>
 
             <SidebarFooter className="border-t border-sidebar-border">

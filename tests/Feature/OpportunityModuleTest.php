@@ -87,6 +87,121 @@ test('an authorized user creates and filters opportunities', function () {
     $this->getJson('/api/opportunities?search=Bachelor')->assertOk()->assertJsonCount(1, 'data');
 });
 
+test('opportunities store structured eligibility criteria', function () {
+    $user = opportunityUser();
+    $university = University::query()->create(['name' => 'Eligibility University', 'country' => 'Canada']);
+    $criteria = [
+        'minimum_ielts_band' => 6.5,
+        'minimum_gpa' => 3,
+        'maximum_study_gap_years' => 2,
+        'minimum_education_level' => "Bachelor's Degree",
+        'required_subjects' => ['Computer Science'],
+        'minimum_work_experience_years' => 1,
+        'accepted_qualification_countries' => ['Bangladesh'],
+    ];
+
+    $this->actingAs($user)->postJson('/api/opportunities', [
+        'university_id' => $university->id,
+        'title' => 'Structured Criteria Program',
+        'status' => 'Open',
+        'eligibility_criteria' => $criteria,
+    ])->assertCreated()->assertJsonPath('data.eligibility_criteria.minimum_ielts_band', 6.5);
+
+    expect(Opportunity::query()->where('title', 'Structured Criteria Program')->first()?->eligibility_criteria)
+        ->toMatchArray($criteria);
+});
+
+test('eligibility evaluation returns supported decisions and explanations', function () {
+    $user = opportunityUser();
+    $university = University::query()->create(['name' => 'Matcher University', 'country' => 'Canada']);
+    $candidate = Candidate::query()->create([
+        'name' => 'Matcher Candidate',
+        'education_level' => "Bachelor's Degree",
+        'gpa' => 3.5,
+        'ielts_score' => 7,
+        'status' => 'Active',
+    ]);
+    Opportunity::query()->create([
+        'university_id' => $university->id,
+        'title' => 'Eligible Programme',
+        'level' => 'Master',
+        'status' => 'Open',
+        'eligibility_criteria' => [
+            'minimum_ielts_band' => 6.5,
+            'minimum_gpa' => 3,
+            'maximum_study_gap_years' => 2,
+            'minimum_education_level' => "Bachelor's Degree",
+        ],
+    ]);
+    Opportunity::query()->create([
+        'university_id' => $university->id,
+        'title' => 'Not Eligible Programme',
+        'level' => 'Master',
+        'status' => 'Open',
+        'eligibility_criteria' => ['minimum_gpa' => 4.5],
+    ]);
+    Opportunity::query()->create([
+        'university_id' => $university->id,
+        'title' => 'Manual Review Programme',
+        'level' => 'Master',
+        'status' => 'Limited',
+        'requirements' => 'Two recommendation letters',
+        'eligibility_criteria' => ['required_subjects' => ['Calculus']],
+    ]);
+    Opportunity::query()->create([
+        'university_id' => $university->id,
+        'title' => 'Closed Programme',
+        'status' => 'Closed',
+        'eligibility_criteria' => ['minimum_gpa' => 0],
+    ]);
+
+    $this->actingAs($user)->getJson("/api/eligibility/students/candidate/{$candidate->id}")
+        ->assertOk()
+        ->assertJsonPath('data.credentials.ielts_score', 7)
+        ->assertJsonPath('data.credentials.gpa', 3.5)
+        ->assertJsonMissingPath('data.email');
+
+    $response = $this->postJson('/api/eligibility/evaluate', [
+        'student_type' => 'candidate',
+        'student_id' => $candidate->id,
+        'ielts_score' => 7,
+        'gpa' => 3.5,
+        'study_gap_years' => 1,
+        'education_level' => "Bachelor's Degree",
+    ])->assertOk()
+        ->assertJsonCount(3, 'data')
+        ->assertJsonPath('matches_count', 1)
+        ->assertJsonPath('data.0.status', 'Eligible')
+        ->assertJsonPath('data.1.status', 'Needs Review')
+        ->assertJsonPath('data.2.status', 'Not Eligible');
+
+    expect($response->json('data.0.checks.0.detail'))->toContain('6.5')
+        ->and($response->json('data.1.checks'))->toHaveCount(2);
+});
+
+test('eligibility evaluation requires opportunity and selected student permissions', function () {
+    $receptionist = User::query()->create([
+        'name' => 'Matcher Receptionist',
+        'email' => 'matcher-receptionist@example.com',
+        'password' => Hash::make('password'),
+    ]);
+    $receptionist->assignRole(RoleEnum::Receptionist->value);
+
+    $candidate = Candidate::query()->create(['name' => 'Private Candidate', 'status' => 'Active']);
+
+    $this->actingAs($receptionist)
+        ->getJson("/api/eligibility/students/candidate/{$candidate->id}")
+        ->assertForbidden();
+
+    $this->postJson('/api/eligibility/evaluate', [
+        'student_type' => 'candidate',
+        'student_id' => $candidate->id,
+        'ielts_score' => 7,
+        'gpa' => 3.5,
+        'study_gap_years' => 0,
+    ])->assertForbidden();
+});
+
 test('invalid opportunity payload returns validation errors', function () {
     $user = opportunityUser();
 

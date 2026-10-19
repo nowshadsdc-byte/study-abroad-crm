@@ -87,3 +87,18 @@ export function formatCurrency(
 
     return `${symbol}${value.toLocaleString()}`;
 }
+
+/** Qualification levels, lowest to highest; matches the backend's EligibilityMatcher ranks. */
+export const EDUCATION_LEVELS = [
+    'Below Secondary / SSC',
+    'SSC / Secondary School Certificate',
+    'HSC / Higher Secondary Certificate',
+    'Diploma',
+    "Bachelor's Degree",
+    "Master's Degree",
+    'MPhil',
+    'PhD / Doctorate',
+    'Professional Qualification',
+    'Vocational / Technical Qualification',
+    'Other',
+] as const;

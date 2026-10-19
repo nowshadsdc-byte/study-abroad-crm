@@ -5,7 +5,6 @@ import {
     Clock3,
     Mail,
     Phone,
-    Plus,
     UserRound,
     UserRoundPlus,
 } from 'lucide-react';
@@ -20,21 +19,13 @@ import {
     CardHeader,
     CardTitle,
 } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from '@/components/ui/select';
 import { usePermission } from '@/hooks/use-permission';
 import { dashboard } from '@/routes';
 import leadApi from '@/routes/api/leads';
 import leads from '@/routes/leads';
 import { AddCandidateDialog } from '../candidates/add-candidate-dialog';
 import { EditLeadDialog } from './edit-lead-dialog';
+import { FollowUpForm, nowForDateTimeInput } from './follow-up-form';
 
 type AssignedUser = {
     id: number | null;
@@ -71,29 +62,6 @@ type Lead = {
 };
 
 type LeadResponse = { data: Lead };
-type FollowUpForm = {
-    type: string;
-    outcome: string;
-    follow_up_date: string;
-    notes: string;
-};
-
-const initialFollowUp: FollowUpForm = {
-    type: 'Call',
-    outcome: 'Callback',
-    follow_up_date: new Date().toISOString().slice(0, 16),
-    notes: '',
-};
-
-const followUpTypes = ['Call', 'Email', 'Meeting', 'WhatsApp', 'Visit'];
-const followUpOutcomes = [
-    'Interested',
-    'Not Interested',
-    'Callback',
-    'Converted',
-    'No Response',
-];
-
 function formatDate(value: string): string {
     return new Intl.DateTimeFormat('en-BD', {
         dateStyle: 'medium',
@@ -120,10 +88,6 @@ export default function LeadShow({ leadId }: { leadId: number }) {
         leadApi.show(leadId),
         {},
     );
-    const followUp = useHttp<FollowUpForm>(
-        leadApi.followUps.store(leadId),
-        initialFollowUp,
-    );
     const [addCandidateOpen, setAddCandidateOpen] = useState(false);
 
     const loadLead = useCallback(async (): Promise<void> => {
@@ -139,27 +103,6 @@ export default function LeadShow({ leadId }: { leadId: number }) {
     useEffect(() => {
         void loadLead();
     }, [loadLead]);
-
-    const handleFollowUp = async (
-        event: React.FormEvent<HTMLFormElement>,
-    ): Promise<void> => {
-        event.preventDefault();
-
-        try {
-            const createdFollowUp = await followUp.submit();
-
-            if (!createdFollowUp) {
-                return;
-            }
-
-            followUp.reset();
-            followUp.clearErrors();
-            toast.success('Follow-up added successfully.');
-            await loadLead();
-        } catch {
-            toast.error('Unable to add the follow-up. Please try again.');
-        }
-    };
 
     const lead = response?.data;
 
@@ -340,136 +283,11 @@ export default function LeadShow({ leadId }: { leadId: number }) {
                             </CardDescription>
                         </CardHeader>
                         <CardContent>
-                            <form
-                                className="grid gap-4 md:grid-cols-2"
-                                onSubmit={handleFollowUp}
-                            >
-                                <div className="grid gap-2">
-                                    <Label htmlFor="type">
-                                        Follow-up medium
-                                    </Label>
-                                    <Select
-                                        value={followUp.data.type}
-                                        onValueChange={(value) =>
-                                            followUp.setData('type', value)
-                                        }
-                                    >
-                                        <SelectTrigger
-                                            className="w-full"
-                                            id="type"
-                                        >
-                                            <SelectValue />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            {followUpTypes.map((type) => (
-                                                <SelectItem
-                                                    key={type}
-                                                    value={type}
-                                                >
-                                                    {type}
-                                                </SelectItem>
-                                            ))}
-                                        </SelectContent>
-                                    </Select>
-                                    {followUp.errors.type && (
-                                        <p className="text-xs text-destructive">
-                                            {followUp.errors.type}
-                                        </p>
-                                    )}
-                                </div>
-                                <div className="grid gap-2">
-                                    <Label htmlFor="outcome">
-                                        Follow-up status
-                                    </Label>
-                                    <Select
-                                        value={followUp.data.outcome}
-                                        onValueChange={(value) =>
-                                            followUp.setData('outcome', value)
-                                        }
-                                    >
-                                        <SelectTrigger
-                                            className="w-full"
-                                            id="outcome"
-                                        >
-                                            <SelectValue />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            {followUpOutcomes.map((outcome) => (
-                                                <SelectItem
-                                                    key={outcome}
-                                                    value={outcome}
-                                                >
-                                                    {outcome}
-                                                </SelectItem>
-                                            ))}
-                                        </SelectContent>
-                                    </Select>
-                                    {followUp.errors.outcome && (
-                                        <p className="text-xs text-destructive">
-                                            {followUp.errors.outcome}
-                                        </p>
-                                    )}
-                                </div>
-                                <div className="grid gap-2">
-                                    <Label htmlFor="follow_up_date">Date</Label>
-                                    <Input
-                                        aria-invalid={Boolean(
-                                            followUp.errors.follow_up_date,
-                                        )}
-                                        id="follow_up_date"
-                                        onChange={(event) =>
-                                            followUp.setData(
-                                                'follow_up_date',
-                                                event.target.value,
-                                            )
-                                        }
-                                        type="datetime-local"
-                                        value={followUp.data.follow_up_date}
-                                    />
-                                    {followUp.errors.follow_up_date && (
-                                        <p className="text-xs text-destructive">
-                                            {followUp.errors.follow_up_date}
-                                        </p>
-                                    )}
-                                </div>
-                                <div className="grid gap-2 md:col-span-2">
-                                    <Label htmlFor="notes">
-                                        Follow-up note
-                                    </Label>
-                                    <textarea
-                                        aria-invalid={Boolean(
-                                            followUp.errors.notes,
-                                        )}
-                                        className="min-h-24 w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-xs outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40"
-                                        id="notes"
-                                        onChange={(event) =>
-                                            followUp.setData(
-                                                'notes',
-                                                event.target.value,
-                                            )
-                                        }
-                                        placeholder="What was discussed and what happens next?"
-                                        value={followUp.data.notes}
-                                    />
-                                    {followUp.errors.notes && (
-                                        <p className="text-xs text-destructive">
-                                            {followUp.errors.notes}
-                                        </p>
-                                    )}
-                                </div>
-                                <div className="md:col-span-2">
-                                    <Button
-                                        className="bg-linear-to-br from-primary to-teal-600 hover:opacity-90"
-                                        disabled={followUp.processing}
-                                        type="submit"
-                                    >
-                                        <Plus />
-                                        {followUp.processing
-                                            ? 'Adding...'
-                                            : 'Add Follow Up'}
-                                    </Button>
-                                </div>
-                            </form>
+                            <FollowUpForm
+                                leadId={lead.id}
+                                defaultDateTime={nowForDateTimeInput()}
+                                onSaved={() => void loadLead()}
+                            />
                         </CardContent>
                     </Card>
                     <Card>

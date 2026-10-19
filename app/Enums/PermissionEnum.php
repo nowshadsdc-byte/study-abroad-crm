@@ -29,4 +29,5 @@ enum PermissionEnum: string
     case ChatView = 'chat.view';
     case ChatSend = 'chat.send';
     case ChatAnnounce = 'chat.announce';
+    case ReportView = 'report.view';
 }

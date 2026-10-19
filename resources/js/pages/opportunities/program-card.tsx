@@ -41,6 +41,7 @@ export type ProgramCardData = {
     currency: string | null;
     scholarship: string | null;
     requirements: string | null;
+    eligibility_criteria: EditableOpportunity['eligibility_criteria'];
     status: string;
     applications_count: number;
     university: {
@@ -103,6 +104,7 @@ export function ProgramCard({
         currency: program.currency,
         scholarship: program.scholarship,
         requirements: program.requirements,
+        eligibility_criteria: program.eligibility_criteria,
         status: program.status,
     };
 

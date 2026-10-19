@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests;
 
+use App\Models\CandidateProgress;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class UpdateCandidateProgressRequest extends FormRequest
 {
@@ -17,12 +19,13 @@ class UpdateCandidateProgressRequest extends FormRequest
     /**
      * Get the validation rules that apply to the request.
      *
-     * @return array<string, array<int, string>>
+     * @return array<string, array<int, mixed>>
      */
     public function rules(): array
     {
         return [
             'status' => ['required', 'in:Pending,In Progress,Completed,Skipped'],
+            'outcome' => ['nullable', Rule::in(CandidateProgress::VISA_OUTCOMES), Rule::prohibitedIf(fn (): bool => $this->route('progress')?->step !== 'Visa')],
             'notes' => ['nullable', 'string', 'max:5000'],
             'opportunity_id' => ['nullable', 'integer', 'exists:opportunities,id'],
         ];

@@ -16,7 +16,6 @@ export type LeadRow = {
     name: string;
     email: string;
     phone: string;
-    address: string;
     interestCourse: string;
     interestCountry: string;
     source: string;
@@ -107,23 +106,13 @@ export const leadColumns = columnHelper.columns([
             </div>
         ),
     }),
-    columnHelper.accessor('address', {
-        header: 'Address',
+    columnHelper.accessor('interestCourse', {
+        header: 'Interested Course',
         sortFn: 'alphanumeric',
     }),
-    columnHelper.display({
-        id: 'interest',
-        header: 'Interest',
-        cell: (props) => (
-            <div className="space-y-0.5">
-                <p className="text-foreground">
-                    {props.row.original.interestCourse}
-                </p>
-                <p className="text-xs text-muted-foreground">
-                    {props.row.original.interestCountry}
-                </p>
-            </div>
-        ),
+    columnHelper.accessor('interestCountry', {
+        header: 'Interested Country',
+        sortFn: 'alphanumeric',
     }),
     columnHelper.accessor('source', {
         header: 'Source',

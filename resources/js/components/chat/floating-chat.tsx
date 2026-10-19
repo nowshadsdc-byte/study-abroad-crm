@@ -157,6 +157,17 @@ export function FloatingChat() {
     }, [open, selectedConversation]);
 
     useEffect(() => {
+        function openInbox(): void {
+            setOpen(true);
+            setError(null);
+        }
+
+        window.addEventListener('crm:chat:open', openInbox);
+
+        return () => window.removeEventListener('crm:chat:open', openInbox);
+    }, []);
+
+    useEffect(() => {
         if (!canView || search.trim().length < 2) {
             return;
         }
@@ -202,9 +213,11 @@ export function FloatingChat() {
                 }
 
                 if (!socket) {
-                    const socketUrl = import.meta.env.VITE_CHAT_SOCKET_URL || (import.meta.env.DEV
-                        ? `${window.location.protocol}//${window.location.hostname}:3000`
-                        : window.location.origin);
+                    const socketUrl =
+                        import.meta.env.VITE_CHAT_SOCKET_URL ||
+                        (import.meta.env.DEV
+                            ? `${window.location.protocol}//${window.location.hostname}:3000`
+                            : window.location.origin);
                     socket = io(socketUrl, {
                         path: '/socket.io',
                         transports: ['websocket'],
@@ -462,7 +475,13 @@ export function FloatingChat() {
         sendRequest.errors.title;
 
     return (
-        <div className="fixed right-4 bottom-4 z-50">
+        <div
+            className="fixed z-[100]"
+            style={{
+                right: 'max(1rem, env(safe-area-inset-right))',
+                bottom: 'max(1rem, env(safe-area-inset-bottom))',
+            }}
+        >
             {open && (
                 <section
                     className="mb-3 flex h-[min(620px,calc(100dvh-7rem))] w-[min(760px,calc(100vw-2rem))] overflow-hidden rounded-xl border bg-card text-card-foreground shadow-xl max-sm:fixed max-sm:inset-2 max-sm:mb-0 max-sm:h-auto max-sm:w-auto"
@@ -778,7 +797,7 @@ export function FloatingChat() {
                     setOpen((value) => !value);
                     setError(null);
                 }}
-                className="ml-auto grid size-14 place-items-center rounded-full bg-[linear-gradient(135deg,oklch(0.55_0.13_162)_0%,oklch(0.5_0.12_180)_100%)] text-white shadow-lg transition hover:opacity-90 focus-visible:ring-[3px] focus-visible:ring-primary/50 focus-visible:outline-none"
+                className="relative ml-auto grid size-14 place-items-center rounded-full bg-[linear-gradient(135deg,oklch(0.55_0.13_162)_0%,oklch(0.5_0.12_180)_100%)] text-white shadow-lg transition hover:opacity-90 focus-visible:ring-[3px] focus-visible:ring-primary/50 focus-visible:outline-none"
                 aria-label={open ? 'Close chat' : 'Open chat'}
             >
                 {open ? (

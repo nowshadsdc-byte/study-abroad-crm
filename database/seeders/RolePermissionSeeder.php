@@ -36,6 +36,7 @@ class RolePermissionSeeder extends Seeder
                 PermissionEnum::OpportunityCreate->value, PermissionEnum::OpportunityEdit->value,
                 PermissionEnum::SettingsAccess->value,
                 PermissionEnum::TaskView->value, PermissionEnum::TaskCreate->value, PermissionEnum::TaskEditAny->value,
+                PermissionEnum::ReportView->value,
             ],
             RoleEnum::Counselor->value => [
                 PermissionEnum::ChatView->value, PermissionEnum::ChatSend->value,
@@ -48,6 +49,7 @@ class RolePermissionSeeder extends Seeder
                 PermissionEnum::ChatView->value, PermissionEnum::ChatSend->value,
                 PermissionEnum::DashboardView->value, PermissionEnum::FinanceView->value, PermissionEnum::FinanceCreate->value, PermissionEnum::FinanceEdit->value, PermissionEnum::CandidateView->value,
                 PermissionEnum::TaskView->value, PermissionEnum::TaskCreate->value,
+                PermissionEnum::ReportView->value,
             ],
             RoleEnum::Receptionist->value => [
                 PermissionEnum::ChatView->value, PermissionEnum::ChatSend->value,

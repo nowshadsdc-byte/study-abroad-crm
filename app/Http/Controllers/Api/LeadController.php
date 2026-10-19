@@ -33,11 +33,12 @@ class LeadController extends Controller
     public function index(Request $request)
     {
         Gate::authorize('viewAny', Lead::class);
-        $filters = $request->validate(['search' => ['nullable', 'string'], 'status' => ['nullable', 'string'], 'source' => ['nullable', 'string'], 'assigned_to_id' => ['nullable', 'integer', 'exists:users,id'], 'needs_follow_up' => ['nullable', 'boolean'], 'per_page' => ['nullable', 'integer', 'min:10', 'max:100']]);
+        $filters = $request->validate(['search' => ['nullable', 'string'], 'status' => ['nullable', 'string'], 'source' => ['nullable', 'string'], 'interest_country' => ['nullable', 'string', 'max:255'], 'assigned_to_id' => ['nullable', 'integer', 'exists:users,id'], 'needs_follow_up' => ['nullable', 'boolean'], 'per_page' => ['nullable', 'integer', 'min:10', 'max:100']]);
         $leads = Lead::query()->with(['assignedTo:id,name,avatar', 'candidate:id,lead_id'])
             ->when($filters['search'] ?? null, fn ($query, $search) => $query->where(fn ($query) => $query->where('name', 'like', "%{$search}%")->orWhere('email', 'like', "%{$search}%")->orWhere('phone', 'like', "%{$search}%")->orWhere('address', 'like', "%{$search}%")))
             ->when($filters['status'] ?? null, fn ($query, $status) => $query->where('status', $status))
             ->when($filters['source'] ?? null, fn ($query, $source) => $query->where('source', $source))
+            ->when($filters['interest_country'] ?? null, fn ($query, $country) => $query->where('interest_country', $country))
             ->when($filters['assigned_to_id'] ?? null, fn ($query, $id) => $query->where('assigned_to_id', $id))
             ->when($filters['needs_follow_up'] ?? null, fn ($query) => $query->whereNotIn('status', ['Converted', 'Lost'])->whereHas('followUps', fn ($query) => $query->whereDate('next_follow_up_date', '<=', today())))
             ->latest()->paginate($filters['per_page'] ?? 20)->withQueryString();
@@ -85,6 +86,11 @@ class LeadController extends Controller
         return LeadResource::collection($leads)->additional([
             'metrics' => $metrics,
             'status_counts' => Lead::query()->selectRaw('status, count(*) as total')->groupBy('status')->pluck('total', 'status'),
+            'filter_options' => [
+                'sources' => Lead::query()->whereNotNull('source')->distinct()->orderBy('source')->pluck('source')->values(),
+                'countries' => Lead::query()->whereNotNull('interest_country')->distinct()->orderBy('interest_country')->pluck('interest_country')->values(),
+                'counselors' => User::query()->where('is_active', true)->orderBy('name')->get(['id', 'name']),
+            ],
         ]);
     }
 

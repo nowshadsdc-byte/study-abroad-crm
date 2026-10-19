@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Candidate;
+use App\Models\CandidateProgress;
 use App\Models\Invoice;
 use App\Models\InvoicePayment;
 use App\Models\Lead;
@@ -38,8 +39,8 @@ class DashboardService
         $activeApplications = Candidate::query()->whereNotIn('status', ['Visa Approved', 'Rejected', 'Withdrawn'])->count();
         $offers = Candidate::query()->whereIn('status', ['Offer', 'Conditional Offer', 'Unconditional Offer'])->count();
 
-        $approved = Candidate::query()->where('status', 'Visa Approved')->count();
-        $refused = Candidate::query()->where('status', 'Rejected')->count();
+        $approved = CandidateProgress::query()->where('step', 'Visa')->where('outcome', 'Approved')->count();
+        $refused = CandidateProgress::query()->where('step', 'Visa')->where('outcome', 'Refused')->count();
         $grantRate = $approved + $refused === 0 ? 0 : (int) round(($approved / ($approved + $refused)) * 100);
 
         $collectionsBdt = (float) InvoicePayment::query()->sum('amount');

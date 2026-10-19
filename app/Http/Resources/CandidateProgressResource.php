@@ -15,7 +15,7 @@ class CandidateProgressResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'id' => $this->id, 'step' => $this->step, 'status' => $this->status, 'notes' => $this->notes, 'completed_at' => $this->completed_at,
+            'id' => $this->id, 'step' => $this->step, 'status' => $this->status, 'outcome' => $this->outcome, 'notes' => $this->notes, 'completed_at' => $this->completed_at,
             'opportunity_id' => $this->opportunity_id,
             'opportunity' => $this->whenLoaded('opportunity', fn () => $this->opportunity === null ? null : [
                 'id' => $this->opportunity->id,

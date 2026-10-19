@@ -14,11 +14,15 @@ Route::inertia('test', 'welcome')->name('test');
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::inertia('dashboard', 'dashboard')->middleware('permission:dashboard.view')->name('dashboard');
     Route::inertia('my-day', 'my-day/index')->middleware('permission:task.view')->name('my-day');
+    Route::inertia('calendar', 'calendar/index')->middleware('permission:task.view')->name('calendar');
+    Route::inertia('documents', 'documents/index')->middleware('permission:candidate.view')->name('documents.index');
 
     Route::inertia('leads', 'leads/index')->middleware('permission:lead.view')->name('leads.index');
+    Route::inertia('leads/match', 'leads/match')->middleware('permission:opportunity.view')->name('leads.match');
     Route::get('leads/{lead}', fn (Lead $lead) => Inertia::render('leads/show', ['leadId' => $lead->id]))->middleware('permission:lead.view')->name('leads.show');
     Route::inertia('candidates', 'candidates/index')->middleware('permission:candidate.view')->name('candidates.index');
     Route::get('candidates/{candidate}', fn (Candidate $candidate) => Inertia::render('candidates/show', ['candidateId' => $candidate->id]))->middleware('permission:candidate.view')->name('candidates.show');
+    Route::inertia('reports', 'reports/index')->middleware('permission:report.view')->name('reports.index');
     Route::inertia('finance', 'finance/index')->middleware('permission:finance.view')->name('finance.index');
     Route::get('finance/{invoice}', fn (Invoice $invoice) => Inertia::render('finance/show', ['invoiceId' => $invoice->id]))->middleware('permission:finance.view')->name('finance.show');
     Route::inertia('opportunities', 'opportunities/index')->middleware('permission:opportunity.view')->name('opportunities.index');

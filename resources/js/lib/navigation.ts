@@ -1,23 +1,24 @@
 import {
-    BookOpenText,
     CalendarDays,
     ChartLine,
     FolderOpen,
     GraduationCap,
     House,
-    Kanban,
     Landmark,
     Settings,
+    Sparkles,
     Sunrise,
     UserRoundSearch,
     Wallet,
 } from 'lucide-react';
-import { dashboard, myDay } from '@/routes';
+import { calendar, dashboard, myDay } from '@/routes';
 import candidates from '@/routes/candidates';
+import documents from '@/routes/documents';
 import finance from '@/routes/finance';
 import leads from '@/routes/leads';
 import opportunities from '@/routes/opportunities';
 import profile from '@/routes/profile';
+import reports from '@/routes/reports';
 import type { NavGroup, NavItem } from '@/types';
 
 type PermittedNavItem = NavItem & {
@@ -52,10 +53,9 @@ const navGroups: PermittedNavGroup[] = [
             },
             {
                 title: 'Calendar',
-                href: '#',
+                href: calendar(),
                 icon: CalendarDays,
-                permission: 'dashboard.view',
-                disabled: true,
+                permission: 'task.view',
             },
         ],
     },
@@ -75,18 +75,10 @@ const navGroups: PermittedNavGroup[] = [
                 permission: 'candidate.view',
             },
             {
-                title: 'Current Applications',
-                href: '#',
-                icon: Kanban,
-                permission: 'candidate.view',
-                disabled: true,
-            },
-            {
                 title: 'Documents',
-                href: '#',
+                href: documents.index(),
                 icon: FolderOpen,
                 permission: 'candidate.view',
-                disabled: true,
             },
         ],
     },
@@ -100,11 +92,10 @@ const navGroups: PermittedNavGroup[] = [
                 permission: 'opportunity.view',
             },
             {
-                title: 'Courses',
-                href: '#',
-                icon: BookOpenText,
+                title: 'Match by Student',
+                href: leads.match(),
+                icon: Sparkles,
                 permission: 'opportunity.view',
-                disabled: true,
             },
         ],
     },
@@ -119,10 +110,9 @@ const navGroups: PermittedNavGroup[] = [
             },
             {
                 title: 'Reports',
-                href: '#',
+                href: reports.index(),
                 icon: ChartLine,
-                permission: 'finance.view',
-                disabled: true,
+                permission: 'report.view',
             },
         ],
     },

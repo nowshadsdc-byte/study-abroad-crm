@@ -84,9 +84,18 @@ export default function MyDay() {
     );
     const deleteRequest = useHttp<Record<string, never>>({});
 
-    const [drawer, setDrawer] = useState<DrawerState | null>(() =>
-        pageQuery(page.url).get('new') === '1' ? { mode: 'create' } : null,
-    );
+    const [drawer, setDrawer] = useState<DrawerState | null>(() => {
+        const query = pageQuery(page.url);
+        const linkedTaskId = Number(query.get('task'));
+
+        if (query.get('new') === '1') {
+            return { mode: 'create' };
+        }
+
+        return Number.isInteger(linkedTaskId) && linkedTaskId > 0
+            ? { mode: 'view', taskId: linkedTaskId }
+            : null;
+    });
     const [pendingDelete, setPendingDelete] = useState<
         Task | TaskDetail | null
     >(null);
@@ -111,6 +120,7 @@ export default function MyDay() {
         const url = new URL(window.location.href);
         url.searchParams.set('view', filters.view);
         url.searchParams.delete('new');
+        url.searchParams.delete('task');
         window.history.replaceState(window.history.state, '', url);
     }, [filters.view]);
 

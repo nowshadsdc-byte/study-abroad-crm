@@ -13,7 +13,10 @@ import {
     DialogTrigger,
 } from '@/components/ui/dialog';
 import opportunityApi from '@/routes/api/opportunities';
-import type { OpportunityForm } from './add-opportunity-dialog';
+import type {
+    OpportunityEligibilityCriteria,
+    OpportunityForm,
+} from './add-opportunity-dialog';
 import {
     OpportunityFormFields,
     useUniversityOptions,
@@ -31,6 +34,7 @@ export type EditableOpportunity = {
     currency: string | null;
     scholarship: string | null;
     requirements: string | null;
+    eligibility_criteria: OpportunityEligibilityCriteria | null;
     status: string;
 };
 
@@ -46,6 +50,25 @@ function buildForm(opportunity: EditableOpportunity): OpportunityForm {
         currency: opportunity.currency ?? 'USD',
         scholarship: opportunity.scholarship ?? '',
         requirements: opportunity.requirements ?? '',
+        eligibility_criteria: {
+            minimum_ielts_band:
+                opportunity.eligibility_criteria?.minimum_ielts_band ?? null,
+            minimum_gpa: opportunity.eligibility_criteria?.minimum_gpa ?? null,
+            maximum_study_gap_years:
+                opportunity.eligibility_criteria?.maximum_study_gap_years ??
+                null,
+            minimum_education_level:
+                opportunity.eligibility_criteria?.minimum_education_level ??
+                null,
+            required_subjects:
+                opportunity.eligibility_criteria?.required_subjects ?? [],
+            minimum_work_experience_years:
+                opportunity.eligibility_criteria
+                    ?.minimum_work_experience_years ?? null,
+            accepted_qualification_countries:
+                opportunity.eligibility_criteria
+                    ?.accepted_qualification_countries ?? [],
+        },
         status: opportunity.status,
     };
 }

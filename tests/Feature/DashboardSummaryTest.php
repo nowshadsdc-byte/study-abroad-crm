@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\Candidate;
+use App\Models\CandidateProgress;
 use App\Models\Invoice;
 use App\Models\Lead;
 use App\Models\LeadFollowUp;
@@ -72,14 +73,15 @@ it('returns summary metrics that match the underlying data', function (): void {
         'updated_at' => $now->subDays(7),
     ]);
 
-    Candidate::query()->create([
+    $visaClient = Candidate::query()->create([
         'name' => 'Mahmud Ali',
         'email' => 'mahmud@example.com',
-        'status' => 'Visa Approved',
+        'status' => 'Active',
         'assigned_to_id' => $user->id,
         'created_at' => $now->subDays(4),
         'updated_at' => $now->subDays(4),
     ]);
+    CandidateProgress::query()->create(['candidate_id' => $visaClient->id, 'step' => 'Visa', 'status' => 'Completed', 'outcome' => 'Approved', 'completed_at' => $now->subDay()]);
 
     Invoice::query()->create([
         'candidate_id' => null,

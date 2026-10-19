@@ -39,6 +39,33 @@ test('an authorized user creates and filters leads', function () {
     $this->getJson('/api/leads?search=Dhaka&status=New&source=Website')->assertOk()->assertJsonCount(1, 'data');
 });
 
+test('leads can be filtered by interested country and return filter options', function () {
+    $user = leadUser();
+    Lead::query()->create([
+        'name' => 'Canada Lead',
+        'source' => 'Website',
+        'interest_country' => 'Canada',
+        'status' => 'New',
+        'priority' => 'Medium',
+    ]);
+    Lead::query()->create([
+        'name' => 'UK Lead',
+        'source' => 'Referral',
+        'interest_country' => 'United Kingdom',
+        'status' => 'Contacted',
+        'priority' => 'High',
+    ]);
+
+    $response = $this->actingAs($user)
+        ->getJson('/api/leads?interest_country=Canada')
+        ->assertOk()
+        ->assertJsonCount(1, 'data')
+        ->assertJsonPath('data.0.name', 'Canada Lead');
+
+    expect($response->json('filter_options.countries'))->toBe(['Canada', 'United Kingdom'])
+        ->and($response->json('filter_options.sources'))->toBe(['Referral', 'Website']);
+});
+
 test('invalid lead payload returns validation errors', function () {
     $user = leadUser();
 

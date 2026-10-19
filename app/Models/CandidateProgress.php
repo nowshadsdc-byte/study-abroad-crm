@@ -9,7 +9,10 @@ class CandidateProgress extends Model
 {
     protected $table = 'candidate_progress';
 
-    protected $fillable = ['candidate_id', 'opportunity_id', 'step', 'status', 'notes', 'completed_at'];
+    /** Decisions recorded on the Visa step. */
+    public const VISA_OUTCOMES = ['Approved', 'Refused'];
+
+    protected $fillable = ['candidate_id', 'opportunity_id', 'step', 'status', 'outcome', 'notes', 'completed_at'];
 
     protected function casts(): array
     {

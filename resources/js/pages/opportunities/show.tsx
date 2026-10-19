@@ -14,6 +14,7 @@ import {
 import { useCallback, useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import { DataTable } from '@/components/data-table/data-table';
+import type { PaginationMeta } from '@/components/data-table/data-table';
 import type { DataTableFeatures } from '@/components/data-table/table-features';
 import { DeleteConfirmDialog } from '@/components/delete-confirm-dialog';
 import { Badge } from '@/components/ui/badge';
@@ -54,6 +55,7 @@ type Opportunity = {
     currency: string | null;
     scholarship: string | null;
     requirements: string | null;
+    eligibility_criteria: EditableOpportunity['eligibility_criteria'];
     status: string;
     university_id: number;
     university: {
@@ -69,7 +71,6 @@ type Opportunity = {
     updated_at: string;
 };
 
-import type { PaginationMeta } from '@/components/data-table/data-table';
 
 type OpportunityResponse = {
     data: Opportunity;
@@ -196,6 +197,7 @@ export default function OpportunityShow({
         currency: opportunity.currency,
         scholarship: opportunity.scholarship,
         requirements: opportunity.requirements,
+        eligibility_criteria: opportunity.eligibility_criteria,
         status: opportunity.status,
     };
 
